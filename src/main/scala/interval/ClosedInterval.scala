@@ -1,4 +1,4 @@
 package interval
 
-class ClosedInterval(val lower: Int, upper: Int) {
+class ClosedInterval(val lowerPoint: Int, upperPoint: Int) {
 } 
