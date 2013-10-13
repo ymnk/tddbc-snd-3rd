@@ -20,10 +20,15 @@ class Subject_1_1 extends FlatSpec with BeforeAndAfter with ShouldMatchers {
     val interval = new ClosedInterval(3, 8) 
   }
 
-  behavior of "ClosedInterval"
   it should "impelement the pretty printer." in {
     val interval = new ClosedInterval(3, 8) 
     interval.toString should equal ("[3,8]")
+  }
+
+  it should "throw an exception if its arguments are wrong." in {
+    intercept[IntervalException] {
+      val interval = new ClosedInterval(8, 3) 
+    }
   }
 
   behavior of "ClosedInterval#lowerPoint"
