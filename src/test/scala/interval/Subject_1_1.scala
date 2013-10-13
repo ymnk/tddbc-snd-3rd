@@ -21,9 +21,15 @@ class Subject_1_1 extends FlatSpec with BeforeAndAfter with ShouldMatchers {
   }
 
   behavior of "ClosedInterval#lowerPoint"
-  it should "return its lowe point." in {
+  it should "return its lower point." in {
     val interval = new ClosedInterval(3, 8) 
     interval.lowerPoint should equal (3)
+  }
+
+  behavior of "ClosedInterval#upperPoint"
+  it should "return its upper point." in {
+    val interval = new ClosedInterval(3, 8) 
+    interval.upperPoint should equal (8)
   }
 
 /*
