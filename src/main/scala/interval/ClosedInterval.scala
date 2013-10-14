@@ -15,6 +15,9 @@ class ClosedInterval(val lowerPoint: Int, val upperPoint: Int) {
     case _ => false
   }
 
+  def isConnectedTo(that: ClosedInterval) =
+    !(upperPoint < that.lowerPoint) && !(that.upperPoint < lowerPoint)
+
   override def toString: String =
     "[%d,%d]".format(lowerPoint, upperPoint)
 } 
