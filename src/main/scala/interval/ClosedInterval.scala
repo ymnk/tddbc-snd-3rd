@@ -1,10 +1,6 @@
 package interval
 
-class ClosedInterval(val lowerPoint: Int, val upperPoint: Int) {
-  if(lowerPoint > upperPoint)
-    throw new IntervalException(
-      "%d should be lower than %d".format(lowerPoint, upperPoint)
-    );
+class ClosedInterval(lower: Int, upper: Int) extends Interval(lower, upper) {
 
   def contains(p: Int): Boolean = 
     (lowerPoint <= p && p <= upperPoint)
@@ -15,8 +11,13 @@ class ClosedInterval(val lowerPoint: Int, val upperPoint: Int) {
     case _ => false
   }
 
-  def isConnectedTo(that: ClosedInterval) =
-    !(upperPoint < that.lowerPoint) && !(that.upperPoint < lowerPoint)
+  def isConnectedTo(other: Interval) = other match {
+    case that: ClosedInterval =>
+      !(upperPoint < that.lowerPoint) && !(that.upperPoint < lowerPoint)
+    case that: OpenInterval =>
+      !(upperPoint <= that.lowerPoint) && !(that.upperPoint <= lowerPoint)
+    case _ => false
+  }
 
   override def toString: String =
     "[%d,%d]".format(lowerPoint, upperPoint)
