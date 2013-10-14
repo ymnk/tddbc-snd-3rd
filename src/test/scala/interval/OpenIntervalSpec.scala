@@ -42,4 +42,10 @@ class OpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers 
     interval.contains(3) should equal (false)
     interval.contains(-1) should equal (false)
   }
+
+  it can "support equlas method." in {
+    val _3to8 = new OpenInterval(3, 8)
+    _3to8.equals(new OpenInterval(3, 8)) should equal (true)
+    _3to8.equals(new OpenInterval(1, 6)) should equal (false)
+  }
 }
