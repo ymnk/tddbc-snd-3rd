@@ -36,4 +36,10 @@ class OpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers 
   it can "return its upper point." in {
     interval.upperPoint should equal (8)
   }
+
+  it can "contains method." in {
+    interval.contains(4) should equal (true)
+    interval.contains(3) should equal (false)
+    interval.contains(-1) should equal (false)
+  }
 }
