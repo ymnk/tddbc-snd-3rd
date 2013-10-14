@@ -75,4 +75,10 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
     _3to8.isConnectedTo(new OpenInterval(9, 12)) should equal (false)
   }
 
+  it can "support containsAll method." in {
+    val _3to8 = new ClosedInterval(3, 8)
+
+    _3to8.containsAll(Array(4, 7, 3)) should equal (true)
+    _3to8.containsAll(Array(6, -1)) should equal (false)
+  }
 }
