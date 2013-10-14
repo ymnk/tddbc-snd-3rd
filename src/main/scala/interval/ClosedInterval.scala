@@ -19,6 +19,16 @@ class ClosedInterval(lower: Int, upper: Int) extends Interval(lower, upper) {
     case _ => false
   }
 
+  def getIntersection(interval: ClosedInterval) = 
+    if(!isConnectedTo(interval))
+      throw new IntervalException(
+        "there is no the intersection between %s and %s".
+          format(toString(), interval.toString())
+      )
+    else
+      new ClosedInterval(Math.max(lowerPoint, interval.lowerPoint),
+                         Math.min(upperPoint, interval.upperPoint))
+
   override def toString: String =
     "[%d,%d]".format(lowerPoint, upperPoint)
 } 
