@@ -5,4 +5,8 @@ abstract class Interval(val lowerPoint: Int, val upperPoint: Int) {
     throw new IntervalException(
       "%d should be lower than %d".format(lowerPoint, upperPoint)
     );
+
+  def contains(arg: Int): Boolean
+
+  def containsAll(arg: Seq[Int]) = arg.forall(this.contains(_))
 }
