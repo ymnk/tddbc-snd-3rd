@@ -77,4 +77,8 @@ class OpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers 
     _3to8.containsAll(Array(4, 7, 3)) should equal (false)
     _3to8.containsAll(Array(6, -1)) should equal (false)
   }
+
+  it can "support parse method." in {
+    OpenInterval.parse("(3,8)").toString should equal ("(3,8)")
+  }
 }

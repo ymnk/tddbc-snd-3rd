@@ -1,5 +1,9 @@
 package interval
 
+object OpenInterval {
+  def parse(str: String) = new OpenInterval(0, 0)
+}
+
 class OpenInterval(lower: Int, upper: Int) extends Interval(lower, upper) {
 
   def contains(p: Int): Boolean = 
