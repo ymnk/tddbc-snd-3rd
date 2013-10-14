@@ -48,4 +48,11 @@ class OpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers 
     _3to8.equals(new OpenInterval(3, 8)) should equal (true)
     _3to8.equals(new OpenInterval(1, 6)) should equal (false)
   }
+
+  it can "support isConnectedTo method." in {
+    val _3to8 = new OpenInterval(3, 8)
+    _3to8.isConnectedTo(new OpenInterval(1, 6)) should equal (true)
+    _3to8.isConnectedTo(new OpenInterval(8, 15)) should equal (false)
+    _3to8.isConnectedTo(new OpenInterval(9, 12)) should equal (false)
+  }
 }
