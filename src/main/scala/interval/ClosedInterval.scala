@@ -6,6 +6,9 @@ class ClosedInterval(val lowerPoint: Int, val upperPoint: Int) {
       "%d should be lower than %d".format(lowerPoint, upperPoint)
     );
 
+  def contains(p: Int): Boolean = 
+    (lowerPoint <= p && p <= upperPoint)
+
   override def toString: String =
     "[%d,%d]".format(lowerPoint, upperPoint)
 } 
