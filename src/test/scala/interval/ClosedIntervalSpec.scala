@@ -81,4 +81,15 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
     _3to8.containsAll(Array(4, 7, 3)) should equal (true)
     _3to8.containsAll(Array(6, -1)) should equal (false)
   }
+
+  it can "support getIntersection method." in {
+    val c3to8 = new ClosedInterval(3, 8)
+    val c4to10 = new ClosedInterval(4, 10)
+    val c9to12 = new ClosedInterval(9, 12)
+
+    c3to8.getIntersection(c4to10).toString should equal ("[4,8]")
+    intercept[IntervalException] {
+      c3to8.getIntersection(c9to12)
+    }
+  }
 }
