@@ -34,6 +34,14 @@ abstract class Interval {
 
   def containsAll(arg: Seq[Int]) = arg.forall(this.contains(_))
 
+  def isConnectedTo(other: Interval) =
+      (upperPoint > other.lowerPoint ||
+       (isInclusive(rightEnd) && isInclusive(other.leftEnd) && 
+        upperPoint == other.lowerPoint)) &&
+      (other.upperPoint > lowerPoint ||
+       (isInclusive(other.rightEnd) && isInclusive(leftEnd) && 
+        other.upperPoint == lowerPoint))
+
   override def toString: String =
     (leftEnd+"%d,%d"+rightEnd).format(lowerPoint, upperPoint)
 }

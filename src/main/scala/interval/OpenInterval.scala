@@ -12,7 +12,4 @@ case class OpenInterval(val lowerPoint: Int, val upperPoint: Int) extends Interv
   import OpenInterval.mark
   val leftEnd = mark._1
   val rightEnd = mark._2
-
-  def isConnectedTo(other: Interval) =
-      !(upperPoint <= other.lowerPoint) && !(other.upperPoint <= lowerPoint)
 } 

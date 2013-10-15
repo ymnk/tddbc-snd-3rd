@@ -13,14 +13,6 @@ case class ClosedInterval(val lowerPoint: Int, val upperPoint: Int) extends Inte
   val leftEnd = mark._1
   val rightEnd = mark._2
 
-  def isConnectedTo(other: Interval) = other match {
-    case ClosedInterval(l, u) => !(upperPoint < l) && !(u < lowerPoint)
-    case ClosedOpenInterval(l, u) => !(upperPoint < l) && !(u <= lowerPoint)
-    case OpenClosedInterval(l, u) => !(upperPoint <= l) && !(u < lowerPoint)
-    case OpenInterval(l, u) => !(upperPoint <= l) && !(u <= lowerPoint)
-    case _ => false
-  }
-
   def getIntersection(interval: ClosedInterval) = 
     if(!isConnectedTo(interval))
       throw new IntervalException(
