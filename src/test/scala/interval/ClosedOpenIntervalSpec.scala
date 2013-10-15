@@ -42,7 +42,7 @@ class ClosedOpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMat
     interval.contains(-1) should equal (false)
   }
 
-  it can "support equlas method." in {
+  it can "support equals method." in {
     val _3to8 = new ClosedOpenInterval(3, 8)
 
     _3to8.equals(new ClosedOpenInterval(3, 8)) should equal (true)
