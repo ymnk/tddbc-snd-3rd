@@ -14,14 +14,11 @@ object Interval {
   }
 }
 
-abstract class Interval {
+abstract class Interval(val leftEnd: String, val rightEnd: String) {
   import Interval.isInclusive
 
   def lowerPoint: Int
   def upperPoint: Int
-
-  def leftEnd: String
-  def rightEnd: String
 
   if(lowerPoint > upperPoint)
     throw new IntervalException(

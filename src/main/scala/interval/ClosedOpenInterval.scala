@@ -9,8 +9,6 @@ object ClosedOpenInterval {
     }
 }
 
-case class ClosedOpenInterval(val lowerPoint: Int, val upperPoint: Int) extends Interval {
-  import ClosedOpenInterval.mark
-  val leftEnd = mark._1
-  val rightEnd = mark._2
+case class ClosedOpenInterval(val lowerPoint: Int, val upperPoint: Int)
+  extends Interval(ClosedOpenInterval.mark._1, ClosedOpenInterval.mark._2) {
 } 

@@ -8,10 +8,8 @@ object ClosedInterval {
   }
 }
 
-case class ClosedInterval(val lowerPoint: Int, val upperPoint: Int) extends Interval {
-  import ClosedInterval.mark
-  val leftEnd = mark._1
-  val rightEnd = mark._2
+case class ClosedInterval(val lowerPoint: Int, val upperPoint: Int)
+  extends Interval(ClosedInterval.mark._1, ClosedInterval.mark._2) {
 
   def getIntersection(interval: ClosedInterval) = 
     if(!isConnectedTo(interval))
