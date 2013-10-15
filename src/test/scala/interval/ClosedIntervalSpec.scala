@@ -108,42 +108,75 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
   }
 
   it should "support getIntersection method for other intervals." in {
-    val c3to8 = ClosedInterval(3, 8)
-    import c3to8.{getIntersection => c3to8_gi}
+    val _3to8 = ClosedInterval(3, 8)
+    import _3to8.{getIntersection => _3to8_gi}
 
-    intercept[IntervalException] {
-      c3to8_gi(OpenInterval(1, 3)) // "(3,3)"
+    val intervals =
+      List(OpenInterval.apply _, ClosedInterval.apply _,
+           OpenClosedInterval.apply _,
+           ClosedOpenInterval.apply _).flatMap { f =>
+        List((1,3), 
+             (3,7), (3,8), (3,10),
+             (4,7), (4,8), (4,10),
+             (8,10)).map { p =>
+        f(p._1, p._2)
+      }
     }
 
-    c3to8_gi(OpenClosedInterval(1, 3)).toString should equal ("[3,3]")
-
-    intercept[IntervalException] {
-      c3to8_gi(ClosedOpenInterval(1, 3)) //  "(3,3)"
+    for(i <- 0 to 15) {
+      for(interval <- intervals) {
+        if(!_3to8.isConnectedTo(interval)){
+          intercept[IntervalException] {
+            _3to8_gi(interval)
+          }
+        }
+        else if(_3to8.contains(i) && interval.contains(i)){
+          _3to8_gi(interval).contains(i) should equal (true)
+        }
+        else {
+          _3to8_gi(interval).contains(i) should equal (false)
+        }
+      }
     }
 
-    c3to8_gi(OpenInterval(3, 7)).toString should equal ("(3,7)")
-    c3to8_gi(OpenClosedInterval(3, 7)).toString should equal ("(3,7]")
-    c3to8_gi(ClosedOpenInterval(3, 7)).toString should equal ("[3,7)")
+    intercept[IntervalException] {
+      _3to8_gi(OpenInterval(1, 3)) // "(3,3)"
+    }
+    _3to8_gi(ClosedInterval(1, 3)).toString should equal ("[3,3]")
+    _3to8_gi(OpenClosedInterval(1, 3)).toString should equal ("[3,3]")
+    intercept[IntervalException] {
+      _3to8_gi(ClosedOpenInterval(1, 3)) //  "(3,3)"
+    }
 
-    c3to8_gi(OpenInterval(3, 8)).toString should equal ("(3,8)")
-    c3to8_gi(OpenClosedInterval(3, 8)).toString should equal ("(3,8]")
-    c3to8_gi(ClosedOpenInterval(3, 8)).toString should equal ("[3,8)")
+    _3to8_gi(OpenInterval(3, 7)).toString should equal ("(3,7)")
+    _3to8_gi(ClosedInterval(3, 7)).toString should equal ("[3,7]")
+    _3to8_gi(OpenClosedInterval(3, 7)).toString should equal ("(3,7]")
+    _3to8_gi(ClosedOpenInterval(3, 7)).toString should equal ("[3,7)")
 
-    c3to8_gi(OpenInterval(3, 10)).toString should equal ("(3,8]")
-    c3to8_gi(OpenClosedInterval(3, 10)).toString should equal ("(3,8]")
-    c3to8_gi(ClosedOpenInterval(3, 10)).toString should equal ("[3,8]")
+    _3to8_gi(OpenInterval(3, 8)).toString should equal ("(3,8)")
+    _3to8_gi(ClosedInterval(3, 8)).toString should equal ("[3,8]")
+    _3to8_gi(OpenClosedInterval(3, 8)).toString should equal ("(3,8]")
+    _3to8_gi(ClosedOpenInterval(3, 8)).toString should equal ("[3,8)")
 
-    c3to8_gi(OpenInterval(4, 7)).toString should equal ("(4,7)")
-    c3to8_gi(OpenClosedInterval(4, 7)).toString should equal ("(4,7]")
-    c3to8_gi(ClosedOpenInterval(4, 7)).toString should equal ("[4,7)")
+    _3to8_gi(OpenInterval(3, 10)).toString should equal ("(3,8]")
+    _3to8_gi(ClosedInterval(3, 10)).toString should equal ("[3,8]")
+    _3to8_gi(OpenClosedInterval(3, 10)).toString should equal ("(3,8]")
+    _3to8_gi(ClosedOpenInterval(3, 10)).toString should equal ("[3,8]")
 
-    c3to8_gi(OpenInterval(4, 8)).toString should equal ("(4,8)")
-    c3to8_gi(OpenClosedInterval(4, 8)).toString should equal ("(4,8]")
-    c3to8_gi(ClosedOpenInterval(4, 8)).toString should equal ("[4,8)")
+    _3to8_gi(OpenInterval(4, 7)).toString should equal ("(4,7)")
+    _3to8_gi(ClosedInterval(4, 7)).toString should equal ("[4,7]")
+    _3to8_gi(OpenClosedInterval(4, 7)).toString should equal ("(4,7]")
+    _3to8_gi(ClosedOpenInterval(4, 7)).toString should equal ("[4,7)")
 
-    c3to8_gi(OpenInterval(4, 10)).toString should equal ("(4,8]")
-    c3to8_gi(OpenClosedInterval(4, 10)).toString should equal ("(4,8]")
-    c3to8_gi(ClosedOpenInterval(4, 10)).toString should equal ("[4,8]")
+    _3to8_gi(OpenInterval(4, 8)).toString should equal ("(4,8)")
+    _3to8_gi(ClosedInterval(4, 8)).toString should equal ("[4,8]")
+    _3to8_gi(OpenClosedInterval(4, 8)).toString should equal ("(4,8]")
+    _3to8_gi(ClosedOpenInterval(4, 8)).toString should equal ("[4,8)")
+
+    _3to8_gi(OpenInterval(4, 10)).toString should equal ("(4,8]")
+    _3to8_gi(ClosedInterval(4, 10)).toString should equal ("[4,8]")
+    _3to8_gi(OpenClosedInterval(4, 10)).toString should equal ("(4,8]")
+    _3to8_gi(ClosedOpenInterval(4, 10)).toString should equal ("[4,8]")
   }
 
   it should "support parse method." in {
