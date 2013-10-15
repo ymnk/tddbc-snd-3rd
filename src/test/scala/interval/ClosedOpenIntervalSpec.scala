@@ -40,6 +40,7 @@ class ClosedOpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMat
     interval.contains(3) should equal (true)
     interval.contains(8) should equal (false)
     interval.contains(-1) should equal (false)
+    new ClosedOpenInterval(3, 3).contains(3) should equal (false)
   }
 
   it can "support equals method." in {
