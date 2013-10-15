@@ -107,6 +107,45 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
     }
   }
 
+  it should "support getIntersection method for other intervals." in {
+    val c3to8 = ClosedInterval(3, 8)
+    import c3to8.{getIntersection => c3to8_gi}
+
+    intercept[IntervalException] {
+      c3to8_gi(OpenInterval(1, 3)) // "(3,3)"
+    }
+
+    c3to8_gi(OpenClosedInterval(1, 3)).toString should equal ("[3,3]")
+
+    intercept[IntervalException] {
+      c3to8_gi(ClosedOpenInterval(1, 3)) //  "(3,3)"
+    }
+
+    c3to8_gi(OpenInterval(3, 7)).toString should equal ("(3,7)")
+    c3to8_gi(OpenClosedInterval(3, 7)).toString should equal ("(3,7]")
+    c3to8_gi(ClosedOpenInterval(3, 7)).toString should equal ("[3,7)")
+
+    c3to8_gi(OpenInterval(3, 8)).toString should equal ("(3,8)")
+    c3to8_gi(OpenClosedInterval(3, 8)).toString should equal ("(3,8]")
+    c3to8_gi(ClosedOpenInterval(3, 8)).toString should equal ("[3,8)")
+
+    c3to8_gi(OpenInterval(3, 10)).toString should equal ("(3,8]")
+    c3to8_gi(OpenClosedInterval(3, 10)).toString should equal ("(3,8]")
+    c3to8_gi(ClosedOpenInterval(3, 10)).toString should equal ("[3,8]")
+
+    c3to8_gi(OpenInterval(4, 7)).toString should equal ("(4,7)")
+    c3to8_gi(OpenClosedInterval(4, 7)).toString should equal ("(4,7]")
+    c3to8_gi(ClosedOpenInterval(4, 7)).toString should equal ("[4,7)")
+
+    c3to8_gi(OpenInterval(4, 8)).toString should equal ("(4,8)")
+    c3to8_gi(OpenClosedInterval(4, 8)).toString should equal ("(4,8]")
+    c3to8_gi(ClosedOpenInterval(4, 8)).toString should equal ("[4,8)")
+
+    c3to8_gi(OpenInterval(4, 10)).toString should equal ("(4,8]")
+    c3to8_gi(OpenClosedInterval(4, 10)).toString should equal ("(4,8]")
+    c3to8_gi(ClosedOpenInterval(4, 10)).toString should equal ("[4,8]")
+  }
+
   it should "support parse method." in {
     ClosedInterval.parse("[3,8]").toString should equal ("[3,8]")
   }
