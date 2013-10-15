@@ -15,6 +15,8 @@ case class ClosedInterval(val lowerPoint: Int, val upperPoint: Int) extends Inte
 
   def isConnectedTo(other: Interval) = other match {
     case ClosedInterval(l, u) => !(upperPoint < l) && !(u < lowerPoint)
+    case ClosedOpenInterval(l, u) => !(upperPoint < l) && !(u <= lowerPoint)
+    case OpenClosedInterval(l, u) => !(upperPoint <= l) && !(u < lowerPoint)
     case OpenInterval(l, u) => !(upperPoint <= l) && !(u <= lowerPoint)
     case _ => false
   }

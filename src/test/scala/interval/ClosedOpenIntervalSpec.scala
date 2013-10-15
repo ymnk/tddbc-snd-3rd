@@ -66,8 +66,28 @@ class ClosedOpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMat
     _3to8.isConnectedTo(new ClosedOpenInterval(9, 12)) should equal (false)
   }
 
-  it should "support isConnectedTo method for ClosedInterval." in {
+  it should "support isConnectedTo method for other intervals." in {
     val _3to8 = new ClosedOpenInterval(3, 8)
+
+    val true_cases = Array(
+      new ClosedInterval(1, 3),
+      new OpenClosedInterval(1, 3)
+    )
+
+    for(interval <- true_cases) {
+      _3to8.isConnectedTo(interval) should equal (true)
+    }
+
+    val false_cases = Array(
+      new ClosedInterval(8, 15),
+      new OpenInterval(1, 3), new OpenInterval(8, 15),
+      new OpenClosedInterval(8, 15)
+    )
+
+    for(interval <- false_cases) {
+      _3to8.isConnectedTo(interval) should equal (false)
+    }
+
 
     _3to8.isConnectedTo(new ClosedInterval(1, 6)) should equal (true)
     _3to8.isConnectedTo(new ClosedInterval(1, 9)) should equal (true)
