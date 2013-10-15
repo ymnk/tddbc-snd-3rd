@@ -17,7 +17,7 @@ class OpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers 
   }
 
   it should "impelement the pretty printer." in {
-    new OpenInterval(3, 8).toString should equal ("[3,8]")
+    new OpenInterval(3, 8).toString should equal ("(3,8)")
   }
 
   it should "throw an exception if its arguments are wrong." in {

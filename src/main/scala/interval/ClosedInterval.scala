@@ -1,8 +1,14 @@
 package interval
 
 object ClosedInterval {
-  def parse(str: String) = new ClosedInterval(0, 0)
+  val re = "\\[\\s*(\\d+)\\s*,\\s*(\\d+)\\s*\\]".r
+  def parse(str: String): ClosedInterval = str.trim match {
+    case re(x,y)  =>
+      new ClosedInterval(Integer.parseInt(x), Integer.parseInt(y))
+    case _ => throw new IntervalException("invalid notation")
+  }
 }
+
 
 class ClosedInterval(lower: Int, upper: Int) extends Interval(lower, upper) {
 

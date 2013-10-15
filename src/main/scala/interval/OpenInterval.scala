@@ -1,7 +1,12 @@
 package interval
 
 object OpenInterval {
-  def parse(str: String) = new OpenInterval(0, 0)
+  private val re = "\\(\\s*(\\d+)\\s*,\\s*(\\d+)\\s*\\)".r
+  def parse(str: String): OpenInterval = str.trim match {
+    case re(x,y) =>
+      new OpenInterval(Integer.parseInt(x), Integer.parseInt(y))
+    case _ => throw new IntervalException("invalid notation")
+  }
 }
 
 class OpenInterval(lower: Int, upper: Int) extends Interval(lower, upper) {
@@ -19,5 +24,5 @@ class OpenInterval(lower: Int, upper: Int) extends Interval(lower, upper) {
       !(upperPoint <= other.lowerPoint) && !(other.upperPoint <= lowerPoint)
 
   override def toString: String =
-    "[%d,%d]".format(lowerPoint, upperPoint)
+    "(%d,%d)".format(lowerPoint, upperPoint)
 } 
