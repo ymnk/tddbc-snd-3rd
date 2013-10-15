@@ -16,7 +16,7 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
   }
 
   behavior of "ClosedInterval"
-  it should "be instaciated by lower and upper points" in {
+  it should "be instantiated by lower and upper points" in {
     new ClosedInterval(3, 8) 
   }
 
@@ -38,7 +38,7 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
     new ClosedInterval(3, 8).upperPoint should equal (8)
   }
 
-  it can "contains method." in {
+  it should "support contains method." in {
     val interval = new ClosedInterval(3, 8) 
     interval.contains(3) should equal (true)
     interval.contains(8) should equal (true)
@@ -46,7 +46,7 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
     interval.contains(9) should equal (false)
   }
 
-  it can "support equals method." in {
+  it should "support equals method." in {
     val _3to8 = new ClosedInterval(3, 8)
     _3to8.equals(new ClosedInterval(3, 8)) should equal (true)
     _3to8.equals(new ClosedInterval(1, 6)) should equal (false)
@@ -55,7 +55,7 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
     _3to8.equals(new OpenInterval(1, 6)) should equal (false)
   }
 
-  it can "support isConnectedTo method." in {
+  it should "support isConnectedTo method." in {
     val _3to8 = new ClosedInterval(3, 8)
 
     _3to8.isConnectedTo(new ClosedInterval(1, 6)) should equal (true)
@@ -65,7 +65,7 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
     _3to8.isConnectedTo(new ClosedInterval(9, 12)) should equal (false)
   }
 
-  it can "support isConnectedTo method for OpenInterval." in {
+  it should "support isConnectedTo method for OpenInterval." in {
     val _3to8 = new ClosedInterval(3, 8)
 
     _3to8.isConnectedTo(new OpenInterval(1, 6)) should equal (true)
@@ -75,14 +75,14 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
     _3to8.isConnectedTo(new OpenInterval(9, 12)) should equal (false)
   }
 
-  it can "support containsAll method." in {
+  it should "support containsAll method." in {
     val _3to8 = new ClosedInterval(3, 8)
 
     _3to8.containsAll(Array(4, 7, 3)) should equal (true)
     _3to8.containsAll(Array(6, -1)) should equal (false)
   }
 
-  it can "support getIntersection method." in {
+  it should "support getIntersection method." in {
     val c3to8 = new ClosedInterval(3, 8)
     val c4to10 = new ClosedInterval(4, 10)
     val c9to12 = new ClosedInterval(9, 12)
@@ -93,7 +93,7 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
     }
   }
 
-  it can "support parse method." in {
+  it should "support parse method." in {
     ClosedInterval.parse("[3,8]").toString should equal ("[3,8]")
   }
 }

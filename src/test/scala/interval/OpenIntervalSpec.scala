@@ -12,7 +12,7 @@ class OpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers 
   }
 
   behavior of "OpenInterval"
-  it should "be instaciated by lower and upper points" in {
+  it should "be instantiated by lower and upper points" in {
     new OpenInterval(3, 8) 
   }
 
@@ -26,22 +26,22 @@ class OpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers 
     }
   }
 
-  it can "return its lower point." in {
+  it should "return its lower point." in {
     new OpenInterval(3, 8).lowerPoint should equal (3)
   }
 
-  it can "return its upper point." in {
+  it should "return its upper point." in {
     new OpenInterval(3, 8).upperPoint should equal (8)
   }
 
-  it can "contains method." in {
+  it should "contains method." in {
     val interval = new OpenInterval(3, 8)
     interval.contains(4) should equal (true)
     interval.contains(3) should equal (false)
     interval.contains(-1) should equal (false)
   }
 
-  it can "support equals method." in {
+  it should "support equals method." in {
     val _3to8 = new OpenInterval(3, 8)
 
     _3to8.equals(new OpenInterval(3, 8)) should equal (true)
@@ -51,7 +51,7 @@ class OpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers 
     _3to8.equals(new ClosedInterval(1, 6)) should equal (false)
   }
 
-  it can "support isConnectedTo method." in {
+  it should "support isConnectedTo method." in {
     val _3to8 = new OpenInterval(3, 8)
 
     _3to8.isConnectedTo(new OpenInterval(1, 6)) should equal (true)
@@ -61,7 +61,7 @@ class OpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers 
     _3to8.isConnectedTo(new OpenInterval(9, 12)) should equal (false)
   }
 
-  it can "support isConnectedTo method for ClosedInterval." in {
+  it should "support isConnectedTo method for ClosedInterval." in {
     val _3to8 = new OpenInterval(3, 8)
 
     _3to8.isConnectedTo(new ClosedInterval(1, 6)) should equal (true)
@@ -71,14 +71,14 @@ class OpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers 
     _3to8.isConnectedTo(new ClosedInterval(9, 12)) should equal (false)
   }
 
-  it can "support containsAll method." in {
+  it should "support containsAll method." in {
     val _3to8 = new OpenInterval(3, 8)
 
     _3to8.containsAll(Array(4, 7, 3)) should equal (false)
     _3to8.containsAll(Array(6, -1)) should equal (false)
   }
 
-  it can "support parse method." in {
+  it should "support parse method." in {
     OpenInterval.parse("(3,8)").toString should equal ("(3,8)")
   }
 }
