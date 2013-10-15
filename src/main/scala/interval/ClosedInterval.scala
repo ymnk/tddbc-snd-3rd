@@ -13,9 +13,6 @@ case class ClosedInterval(val lowerPoint: Int, val upperPoint: Int) extends Inte
   val leftEnd = mark._1
   val rightEnd = mark._2
 
-  def contains(p: Int): Boolean = 
-    (lowerPoint <= p && p <= upperPoint)
-
   def isConnectedTo(other: Interval) = other match {
     case ClosedInterval(l, u) => !(upperPoint < l) && !(u < lowerPoint)
     case OpenInterval(l, u) => !(upperPoint <= l) && !(u <= lowerPoint)
