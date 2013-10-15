@@ -1,15 +1,17 @@
 package interval
 
 object ClosedInterval {
-  val re = "\\[\\s*(\\d+)\\s*,\\s*(\\d+)\\s*\\]".r
-  def parse(str: String): ClosedInterval = str.trim match {
-    case re(x,y)  =>
-      new ClosedInterval(Integer.parseInt(x), Integer.parseInt(y))
-    case _ => throw new IntervalException("invalid notation")
+  val mark = ("[", "]")
+  def parse(str: String): ClosedInterval = Interval.parse(str, mark) match {
+    case (x, y) => 
+      ClosedInterval(Integer.parseInt(x), Integer.parseInt(y))
   }
 }
 
 case class ClosedInterval(val lowerPoint: Int, val upperPoint: Int) extends Interval {
+  import ClosedInterval.mark
+  val leftEnd = mark._1
+  val rightEnd = mark._2
 
   def contains(p: Int): Boolean = 
     (lowerPoint <= p && p <= upperPoint)
@@ -29,7 +31,4 @@ case class ClosedInterval(val lowerPoint: Int, val upperPoint: Int) extends Inte
     else
       new ClosedInterval(Math.max(lowerPoint, interval.lowerPoint),
                          Math.min(upperPoint, interval.upperPoint))
-
-  override def toString: String =
-    "[%d,%d]".format(lowerPoint, upperPoint)
 } 
