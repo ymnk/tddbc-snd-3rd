@@ -92,4 +92,8 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
       c3to8.getIntersection(c9to12)
     }
   }
+
+  it can "support parse method." in {
+    ClosedInterval.parse("[3,8]").toString should equal ("[3,8]")
+  }
 }

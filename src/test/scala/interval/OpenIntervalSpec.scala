@@ -17,7 +17,7 @@ class OpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers 
   }
 
   it should "impelement the pretty printer." in {
-    new OpenInterval(3, 8).toString should equal ("[3,8]")
+    new OpenInterval(3, 8).toString should equal ("(3,8)")
   }
 
   it should "throw an exception if its arguments are wrong." in {
@@ -76,5 +76,9 @@ class OpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers 
 
     _3to8.containsAll(Array(4, 7, 3)) should equal (false)
     _3to8.containsAll(Array(6, -1)) should equal (false)
+  }
+
+  it can "support parse method." in {
+    OpenInterval.parse("(3,8)").toString should equal ("(3,8)")
   }
 }
