@@ -9,16 +9,10 @@ object OpenInterval {
   }
 }
 
-class OpenInterval(lower: Int, upper: Int) extends Interval(lower, upper) {
+case class OpenInterval(val lowerPoint: Int, val upperPoint: Int) extends Interval {
 
   def contains(p: Int): Boolean = 
     (lowerPoint < p && p < upperPoint)
-
-  override def equals(other:Any) = other match {
-    case that: OpenInterval =>
-     lowerPoint == that.lowerPoint && upperPoint == that.upperPoint
-    case _ => false
-  }
 
   def isConnectedTo(other: Interval) =
       !(upperPoint <= other.lowerPoint) && !(other.upperPoint <= lowerPoint)

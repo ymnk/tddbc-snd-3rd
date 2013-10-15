@@ -9,23 +9,14 @@ object ClosedInterval {
   }
 }
 
-
-class ClosedInterval(lower: Int, upper: Int) extends Interval(lower, upper) {
+case class ClosedInterval(val lowerPoint: Int, val upperPoint: Int) extends Interval {
 
   def contains(p: Int): Boolean = 
     (lowerPoint <= p && p <= upperPoint)
 
-  override def equals(other:Any) = other match {
-    case that: ClosedInterval =>
-     lowerPoint == that.lowerPoint && upperPoint == that.upperPoint
-    case _ => false
-  }
-
   def isConnectedTo(other: Interval) = other match {
-    case that: ClosedInterval =>
-      !(upperPoint < that.lowerPoint) && !(that.upperPoint < lowerPoint)
-    case that: OpenInterval =>
-      !(upperPoint <= that.lowerPoint) && !(that.upperPoint <= lowerPoint)
+    case ClosedInterval(l, u) => !(upperPoint < l) && !(u < lowerPoint)
+    case OpenInterval(l, u) => !(upperPoint <= l) && !(u <= lowerPoint)
     case _ => false
   }
 
