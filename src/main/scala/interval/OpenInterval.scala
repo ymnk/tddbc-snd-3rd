@@ -2,12 +2,10 @@ package interval
 
 object OpenInterval {
   val mark = ("(", ")")
-  def parse(str: String): OpenInterval = Interval.parse(str, mark) match {
-    case (x, y) => 
-      OpenInterval(Integer.parseInt(x), Integer.parseInt(y))
-  }
+  def parse(str: String): Interval =
+    Interval.parse(str, mark, OpenInterval.apply _)
 }
 
-case class OpenInterval(val lowerPoint: Int, val upperPoint: Int)
+case class OpenInterval(val lowerPoint: Point, val upperPoint: Point)
   extends Interval(OpenInterval.mark._1, OpenInterval.mark._2) {
 } 
