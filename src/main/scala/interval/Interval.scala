@@ -25,6 +25,9 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
       "%d should be lower than %d".format(lowerPoint, upperPoint)
     );
 
+  def isLeftInclusive = leftEnd == "["
+  def isRightInclusive = rightEnd == "]"
+
   def contains(p: Int): Boolean = 
     (lowerPoint < p || (isInclusive(leftEnd) && lowerPoint == p)) &&
       (p < upperPoint || (isInclusive(rightEnd) && upperPoint == p))
@@ -38,6 +41,41 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
       (other.upperPoint > lowerPoint ||
        (isInclusive(other.rightEnd) && isInclusive(leftEnd) && 
         other.upperPoint == lowerPoint))
+
+  def getIntersection(other: Interval) = 
+    if(!isConnectedTo(other)){
+      throw new IntervalException(
+        "there is no intersection between %s and %s".
+          format(toString(), other.toString())
+      )
+    }
+    else {
+      val left =
+        if(lowerPoint < other.lowerPoint)
+          other.isLeftInclusive
+        else if(lowerPoint == other.lowerPoint)
+          other.isLeftInclusive && isLeftInclusive
+        else
+          isLeftInclusive
+
+      val right =
+        if(upperPoint > other.upperPoint)
+          other.isRightInclusive
+        else if(upperPoint == other.upperPoint)
+          other.isRightInclusive && isRightInclusive
+        else
+          isRightInclusive
+
+      val rp = Math.max(lowerPoint, other.lowerPoint)
+      val lp = Math.min(upperPoint, other.upperPoint)
+
+      (left, right) match {
+        case (true, true) => ClosedInterval(rp, lp)
+        case (true, false) => ClosedOpenInterval(rp, lp)
+        case (false, true) => OpenClosedInterval(rp, lp)
+        case (false, false) => OpenInterval(rp, lp)
+      }
+    }
 
   override def toString: String =
     (leftEnd+"%d,%d"+rightEnd).format(lowerPoint, upperPoint)
