@@ -36,7 +36,7 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
      (upperPoint==mInfinite && lowerPoint!=mInfinite) ||
      (upperPoint==pInfinite && isRightInclusive) ||
      (lowerPoint!=mInfinite && upperPoint!=pInfinite &&
-      lowerPoint.point > upperPoint.point))
+      !lowerPoint.less(upperPoint)))
     throw new IntervalException(
         "%s should be lower than %s".format(lowerPoint, upperPoint)
     );
@@ -45,45 +45,20 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
   def isRightInclusive = rightEnd == "]"
 
   def contains(p: Int): Boolean = 
-    if(lowerPoint == mInfinite && upperPoint == pInfinite) true
-    else if(lowerPoint == mInfinite) {
-      (p < upperPoint.point || (isRightInclusive && upperPoint.point == p))
-    }
-    else if(upperPoint == pInfinite) {
-      (lowerPoint.point < p || (isLeftInclusive && lowerPoint.point == p))
-    }
-    else  
-      ((lowerPoint.point < p || (isLeftInclusive && lowerPoint.point == p)) &&
-       (p < upperPoint.point || (isRightInclusive && upperPoint.point == p)))
+    (!lowerPoint.greater(p:Point) ||
+     (isLeftInclusive && lowerPoint == (p:Point))) &&
+    (!(p:Point).greater(upperPoint) ||
+     (isRightInclusive && upperPoint == (p:Point)))
 
   def containsAll(arg: Seq[Int]) = arg.forall(this.contains(_))
 
   def isConnectedTo(other: Interval) =
-    if((lowerPoint == mInfinite && upperPoint == pInfinite) ||
-       (other.lowerPoint == mInfinite && other.upperPoint == pInfinite) ||
-       (lowerPoint == mInfinite && other.lowerPoint == mInfinite) ||
-       (upperPoint == pInfinite && other.upperPoint == pInfinite) ||
-       (other.lowerPoint == mInfinite && other.upperPoint == pInfinite) ||
-       (other.upperPoint == pInfinite && upperPoint == pInfinite))
-      true
-    else if(lowerPoint == mInfinite || other.upperPoint == pInfinite) {
-      (upperPoint.point > other.lowerPoint.point ||
-       (isRightInclusive && other.isLeftInclusive && 
-        upperPoint.point == other.lowerPoint.point))
-    } 
-    else if(upperPoint == pInfinite || other.lowerPoint == mInfinite) {
-      (other.upperPoint.point > lowerPoint.point ||
-       (other.isRightInclusive && isLeftInclusive && 
-        other.upperPoint.point == lowerPoint.point))
-    }
-    else {
-      (upperPoint.point > other.lowerPoint.point ||
-       (isRightInclusive && other.isLeftInclusive && 
-        upperPoint.point == other.lowerPoint.point)) &&
-      (other.upperPoint.point > lowerPoint.point ||
-       (other.isRightInclusive && isLeftInclusive && 
-        other.upperPoint.point == lowerPoint.point))
-    }
+    (!(upperPoint.less(other.lowerPoint)) ||
+     (isRightInclusive && other.isLeftInclusive && 
+      upperPoint == other.lowerPoint)) &&
+    (!(other.upperPoint.less(lowerPoint)) ||
+     (other.isRightInclusive && isLeftInclusive && 
+      other.upperPoint == lowerPoint))
 
   def getIntersection(other: Interval) = 
     if(!isConnectedTo(other)){
@@ -101,10 +76,10 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
           (other.isLeftInclusive, other.lowerPoint)
         else if(other.lowerPoint == mInfinite)
           (isLeftInclusive, lowerPoint)
-        else if(lowerPoint.point < other.lowerPoint.point)
+        else if(!lowerPoint.greater(other.lowerPoint))
           (other.isLeftInclusive,
 	   Math.max(lowerPoint.point, other.lowerPoint.point):Point)
-        else if(lowerPoint.point == other.lowerPoint.point)
+        else if(lowerPoint == other.lowerPoint)
           (other.isLeftInclusive && isLeftInclusive,
 	   Math.max(lowerPoint.point, other.lowerPoint.point):Point)
         else
@@ -118,10 +93,10 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
           (other.isRightInclusive, other.upperPoint)
         else if(other.upperPoint == pInfinite)
           (isRightInclusive, upperPoint)
-        else if(upperPoint.point > other.upperPoint.point)
+        else if(!upperPoint.less(other.upperPoint))
           (other.isRightInclusive,
 	   Math.min(upperPoint.point, other.upperPoint.point):Point)
-        else if(upperPoint.point == other.upperPoint.point)
+        else if(upperPoint == other.upperPoint)
           (other.isRightInclusive && isRightInclusive,
 	   Math.min(upperPoint.point, other.upperPoint.point):Point)
         else
