@@ -35,6 +35,10 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
   private def max(p1: Point, p2: Point): Point = if(p1.less(p2)) p2 else p1
   private def min(p1: Point, p2: Point): Point = if(p1.less(p2)) p1 else p2
 
+  /**
+   * The following intervals are not allowed,
+   *   (+inf,8] [+inf,8) [3,-inf) [3,+inf]
+   */  
   if((lowerPoint==pInfinite && upperPoint!=pInfinite) ||
      (lowerPoint==mInfinite && isLeftInclusive) ||
      (upperPoint==mInfinite && lowerPoint!=mInfinite) ||
@@ -43,7 +47,7 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
       !lowerPoint.less(upperPoint)))
     throw new IntervalException(
         "%s should be lower than %s".format(lowerPoint, upperPoint)
-    );
+    )
 
   def isLeftInclusive = leftEnd == "["
   def isRightInclusive = rightEnd == "]"
@@ -74,45 +78,30 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
     }
     else {
 
+      val lp = max(lowerPoint, other.lowerPoint)
+      val up = min(upperPoint, other.upperPoint)
+
       val left =
-        if(lowerPoint == mInfinite && other.lowerPoint == mInfinite)
-          (false, mInfinite)
-        else if(lowerPoint == mInfinite)
-          (other.isLeftInclusive, other.lowerPoint)
-        else if(other.lowerPoint == mInfinite)
-          (isLeftInclusive, lowerPoint)
-        else if(!lowerPoint.greater(other.lowerPoint))
-          (other.isLeftInclusive,
-	   max(lowerPoint, other.lowerPoint))
+        if(!lowerPoint.greater(other.lowerPoint))
+         other.isLeftInclusive
         else if(lowerPoint == other.lowerPoint)
-          (other.isLeftInclusive && isLeftInclusive,
-	   max(lowerPoint, other.lowerPoint))
+          other.isLeftInclusive && isLeftInclusive
         else
-          (isLeftInclusive,
-	   max(lowerPoint, other.lowerPoint))
+          isLeftInclusive
 
       val right =
-        if(upperPoint == pInfinite && other.upperPoint == pInfinite)
-          (false, pInfinite)
-        else if(upperPoint == pInfinite)
-          (other.isRightInclusive, other.upperPoint)
-        else if(other.upperPoint == pInfinite)
-          (isRightInclusive, upperPoint)
-        else if(!upperPoint.less(other.upperPoint))
-          (other.isRightInclusive,
-	   min(upperPoint, other.upperPoint))
+        if(!upperPoint.less(other.upperPoint))
+          other.isRightInclusive
         else if(upperPoint == other.upperPoint)
-          (other.isRightInclusive && isRightInclusive,
-	   min(upperPoint, other.upperPoint))
+          other.isRightInclusive && isRightInclusive
         else
-          (isRightInclusive,
-	   min(upperPoint, other.upperPoint))
+          isRightInclusive
 
       (left, right) match {
-        case ((true, lp), (true, up)) => ClosedInterval(lp, up)
-        case ((true, lp), (false, up)) => ClosedOpenInterval(lp, up)
-        case ((false, lp), (true, up)) => OpenClosedInterval(lp, up)
-        case ((false, lp), (false, up)) => OpenInterval(lp, up)
+        case (true, true) => ClosedInterval(lp, up)
+        case (true, false) => ClosedOpenInterval(lp, up)
+        case (false, true) => OpenClosedInterval(lp, up)
+        case (false, false) => OpenInterval(lp, up)
       }
     }
 
