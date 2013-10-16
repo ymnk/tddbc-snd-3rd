@@ -3,6 +3,8 @@ package interval
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers
 
+import Point.pointType._
+
 class InfiniteIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers {
 
   before {
@@ -85,22 +87,6 @@ class InfiniteIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatch
     _mito8.isConnectedTo(OpenInterval(8, 15)) should equal (false)
     _mito8.isConnectedTo(OpenInterval(9, 15)) should equal (false)
   }
-
-/*
-  it should "support isConnectedTo method for other intervals." in {
-    val _3to8 = OpenInterval(3, 8)
-
-    val false_cases = Array(
-      ClosedInterval(1, 3), ClosedInterval(8, 15),
-      OpenInterval(1, 3), OpenInterval(8, 15),
-      ClosedOpenInterval(1, 3), ClosedOpenInterval(8, 15),
-      OpenClosedInterval(1, 3), OpenClosedInterval(8, 15))
-
-    for(interval <- false_cases){
-      _3to8.isConnectedTo(interval) should equal (false)
-    }
-  }
-*/
 
   it should "support containsAll method." in {
     val _3topi = OpenInterval(3, pInfinite)

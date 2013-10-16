@@ -3,6 +3,8 @@ package interval
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers
 
+import Point.pointType._
+
 class OpenClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers {
 
   before {
@@ -27,11 +29,11 @@ class OpenClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMat
   }
 
   it can "return its lower point." in {
-    OpenClosedInterval(3, 8).lowerPoint.point should equal (3)
+    OpenClosedInterval(3, 8).lowerPoint should equal (3: Point)
   }
 
   it can "return its upper point." in {
-    OpenClosedInterval(3, 8).upperPoint.point should equal (8)
+    OpenClosedInterval(3, 8).upperPoint should equal (8: Point)
   }
 
   it should "support contains method." in {
@@ -91,7 +93,6 @@ class OpenClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMat
 
   it should "support containsAll method." in {
     val _3to8 = OpenClosedInterval(3, 8)
-
     _3to8.containsAll(Array(4, 7, 8)) should equal (true)
     _3to8.containsAll(Array(4, 7, 3, 8)) should equal (false)
     _3to8.containsAll(Array(6, -1)) should equal (false)

@@ -1,28 +1,41 @@
 package interval
 
 object Interval {
-  private val inclusive = Array("[", "]")
-  private val exclusive = Array("(", ")")
 
   def parse(str: String,
             mark: (String, String),
             f: (Point, Point)=>Interval): Interval = {
     val re = ("\\"+mark._1+"\\s*(.+)\\s*,\\s*(.+)\\s*\\"+mark._2).r
+    val re_date = ("\\"+mark._1+"\\s*(\\d+)/(\\d+)/(\\d+)\\s*,\\s*(\\d+)/(\\d+)/(\\d+)\\s*\\"+mark._2).r
     str.trim match {
+      case re_date(x1,x2,x3,y1,y2,y3) => 
+        import java.util.Calendar
+        val c1 = Calendar.getInstance()
+        c1.clear
+        c1.set(Integer.parseInt(x1),
+               Integer.parseInt(x2)-1,
+               Integer.parseInt(x3),0,0,0)
+        val c2 = Calendar.getInstance()
+        c2.clear
+        c2.set(Integer.parseInt(y1),
+               Integer.parseInt(y2)-1,
+               Integer.parseInt(y3),0,0,0)
+        f(c1: Point, c2: Point)
       case re(x,y) => 
         val l = if(x.forall(_.isDigit)) Integer.parseInt(x): Point
                 else if (x.equals("-inf")) mInfinite
-                else throw new IntervalException("invalid notation")
+                else x: Point
         val u = if(y.forall(_.isDigit)) Integer.parseInt(y): Point
                 else if (y.equals("+inf")) pInfinite
-                else throw new IntervalException("invalid notation")
+                else y: Point
         f(l, u)
       case _ => throw new IntervalException("invalid notation")
     }
   }
 
-  def filter(seq: Seq[Int], interval: Interval): Set[Int] = {
-    seq.filter(interval.contains(_)).toSet
+  def filter[T: PointType](seq: Seq[T], interval: Interval): Set[T] = {
+    val imp = implicitly[PointType[T]]
+    imp.unconvSet(imp.convSeq(seq).filter(interval.contains(_)).toSet)
   }
 }
 
@@ -31,6 +44,13 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
   def lowerPoint: Point
   def upperPoint: Point
 
+  private def max(p1: Point, p2: Point): Point = if(p1.less(p2)) p2 else p1
+  private def min(p1: Point, p2: Point): Point = if(p1.less(p2)) p1 else p2
+
+  /**
+   * The following intervals are not allowed,
+   *   (+inf,8] [+inf,8) [3,-inf) [3,+inf]
+   */  
   if((lowerPoint==pInfinite && upperPoint!=pInfinite) ||
      (lowerPoint==mInfinite && isLeftInclusive) ||
      (upperPoint==mInfinite && lowerPoint!=mInfinite) ||
@@ -39,18 +59,19 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
       !lowerPoint.less(upperPoint)))
     throw new IntervalException(
         "%s should be lower than %s".format(lowerPoint, upperPoint)
-    );
+    )
 
   def isLeftInclusive = leftEnd == "["
   def isRightInclusive = rightEnd == "]"
 
-  def contains(p: Int): Boolean = 
-    (!lowerPoint.greater(p:Point) ||
-     (isLeftInclusive && lowerPoint == (p:Point))) &&
-    (!(p:Point).greater(upperPoint) ||
-     (isRightInclusive && upperPoint == (p:Point)))
+  def contains(p: Point): Boolean = 
+    (!lowerPoint.greater(p) ||
+     (isLeftInclusive && lowerPoint == (p))) &&
+    (!(p).greater(upperPoint) ||
+     (isRightInclusive && upperPoint == (p)))
 
-  def containsAll(arg: Seq[Int]) = arg.forall(this.contains(_))
+  def containsAll[T: PointType](arg: Seq[T]) =
+    implicitly[PointType[T]].convSeq(arg).forall(this.contains(_))
 
   def isConnectedTo(other: Interval) =
     (!(upperPoint.less(other.lowerPoint)) ||
@@ -69,45 +90,30 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
     }
     else {
 
+      val lp = max(lowerPoint, other.lowerPoint)
+      val up = min(upperPoint, other.upperPoint)
+
       val left =
-        if(lowerPoint == mInfinite && other.lowerPoint == mInfinite)
-          (false, mInfinite)
-        else if(lowerPoint == mInfinite)
-          (other.isLeftInclusive, other.lowerPoint)
-        else if(other.lowerPoint == mInfinite)
-          (isLeftInclusive, lowerPoint)
-        else if(!lowerPoint.greater(other.lowerPoint))
-          (other.isLeftInclusive,
-	   Math.max(lowerPoint.point, other.lowerPoint.point):Point)
+        if(!lowerPoint.greater(other.lowerPoint))
+         other.isLeftInclusive
         else if(lowerPoint == other.lowerPoint)
-          (other.isLeftInclusive && isLeftInclusive,
-	   Math.max(lowerPoint.point, other.lowerPoint.point):Point)
+          other.isLeftInclusive && isLeftInclusive
         else
-          (isLeftInclusive,
-	   Math.max(lowerPoint.point, other.lowerPoint.point):Point)
+          isLeftInclusive
 
       val right =
-        if(upperPoint == pInfinite && other.upperPoint == pInfinite)
-          (false, pInfinite)
-        else if(upperPoint == pInfinite)
-          (other.isRightInclusive, other.upperPoint)
-        else if(other.upperPoint == pInfinite)
-          (isRightInclusive, upperPoint)
-        else if(!upperPoint.less(other.upperPoint))
-          (other.isRightInclusive,
-	   Math.min(upperPoint.point, other.upperPoint.point):Point)
+        if(!upperPoint.less(other.upperPoint))
+          other.isRightInclusive
         else if(upperPoint == other.upperPoint)
-          (other.isRightInclusive && isRightInclusive,
-	   Math.min(upperPoint.point, other.upperPoint.point):Point)
+          other.isRightInclusive && isRightInclusive
         else
-          (isRightInclusive,
-	   Math.min(upperPoint.point, other.upperPoint.point):Point)
+          isRightInclusive
 
       (left, right) match {
-        case ((true, lp), (true, up)) => ClosedInterval(lp, up)
-        case ((true, lp), (false, up)) => ClosedOpenInterval(lp, up)
-        case ((false, lp), (true, up)) => OpenClosedInterval(lp, up)
-        case ((false, lp), (false, up)) => OpenInterval(lp, up)
+        case (true, true) => ClosedInterval(lp, up)
+        case (true, false) => ClosedOpenInterval(lp, up)
+        case (false, true) => OpenClosedInterval(lp, up)
+        case (false, false) => OpenInterval(lp, up)
       }
     }
 

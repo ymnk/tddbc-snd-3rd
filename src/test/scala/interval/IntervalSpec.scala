@@ -3,9 +3,7 @@ package interval
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers
 
-import java.io.{ByteArrayOutputStream => BAOS, ByteArrayInputStream => BAIS}
-import java.io.{ObjectOutputStream => OOS, ObjectInputStream => OIS}
-import java.io._
+import Point.pointType._
 
 class IntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers {
 
