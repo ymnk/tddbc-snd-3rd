@@ -111,35 +111,6 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
     val _3to8 = ClosedInterval(3, 8)
     import _3to8.{getIntersection => _3to8_gi}
 
-    val intervals =
-      List(OpenInterval.apply _,
-           ClosedInterval.apply _,
-           OpenClosedInterval.apply _,
-           ClosedOpenInterval.apply _).flatMap { f =>
-        List((1,3), 
-             (3,7), (3,8), (3,10),
-             (4,7), (4,8), (4,10),
-             (8,10)).map { p =>
-        f(p._1, p._2)
-      }
-    }
-
-    for(i <- 0 to 15) {
-      for(interval <- intervals) {
-        if(!_3to8.isConnectedTo(interval)){
-          intercept[IntervalException] {
-            _3to8_gi(interval)
-          }
-        }
-        else if(_3to8.contains(i) && interval.contains(i)){
-          _3to8_gi(interval).contains(i) should equal (true)
-        }
-        else {
-          _3to8_gi(interval).contains(i) should equal (false)
-        }
-      }
-    }
-
     intercept[IntervalException] {
       _3to8_gi(OpenInterval(1, 3)) // "(3,3)"
     }
