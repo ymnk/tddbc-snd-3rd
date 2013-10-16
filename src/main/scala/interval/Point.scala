@@ -9,9 +9,16 @@ object Point {
       throw new IntervalException("There is no way to change "+p+" to Point")
   }
 
-  def max(p1: Point, p2: Point): Point = if(p1.less(p2)) p2 else p1
-
-  def min(p1: Point, p2: Point): Point = if(p1.less(p2)) p1 else p2
+  object pointType {
+    implicit object PointTypeInt extends PointType[Int] {
+      def convSeq(seq: Seq[Int]): Seq[Point] = seq.map(new PointInt(_))
+      def unconvSet(set: Set[Point]): Set[Int] = set.map(_.asInstanceOf[PointInt].point)
+    }
+    implicit object PointTypePoint extends PointType[Point] {
+     def convSeq(seq: Seq[Point]) = seq
+     def unconvSet(seq: Set[Point]) = seq
+    }
+  }
 }
 
 trait Point {
@@ -42,6 +49,11 @@ trait Point {
         "greater is not defined between %s and %s".format(this, other)
       )
   }
+}
+
+trait PointType[T] {
+  def convSeq(seq: Seq[T]): Seq[Point]
+  def unconvSet(set: Set[Point]): Set[T]
 }
 
 class PointInt(_point: Int) extends Point {

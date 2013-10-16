@@ -12,17 +12,18 @@ object Interval {
       case re(x,y) => 
         val l = if(x.forall(_.isDigit)) Integer.parseInt(x): Point
                 else if (x.equals("-inf")) mInfinite
-                else throw new IntervalException("invalid notation")
+                else x: Point
         val u = if(y.forall(_.isDigit)) Integer.parseInt(y): Point
                 else if (y.equals("+inf")) pInfinite
-                else throw new IntervalException("invalid notation")
+                else y: Point
         f(l, u)
       case _ => throw new IntervalException("invalid notation")
     }
   }
 
-  def filter(seq: Seq[Int], interval: Interval): Set[Int] = {
-    seq.filter(interval.contains(_)).toSet
+  def filter[T: PointType](seq: Seq[T], interval: Interval): Set[T] = {
+    val imp = implicitly[PointType[T]]
+    imp.unconvSet(imp.convSeq(seq).filter(interval.contains(_)).toSet)
   }
 }
 
@@ -30,6 +31,9 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
 
   def lowerPoint: Point
   def upperPoint: Point
+
+  private def max(p1: Point, p2: Point): Point = if(p1.less(p2)) p2 else p1
+  private def min(p1: Point, p2: Point): Point = if(p1.less(p2)) p1 else p2
 
   if((lowerPoint==pInfinite && upperPoint!=pInfinite) ||
      (lowerPoint==mInfinite && isLeftInclusive) ||
@@ -44,13 +48,14 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
   def isLeftInclusive = leftEnd == "["
   def isRightInclusive = rightEnd == "]"
 
-  def contains(p: Int): Boolean = 
-    (!lowerPoint.greater(p:Point) ||
-     (isLeftInclusive && lowerPoint == (p:Point))) &&
-    (!(p:Point).greater(upperPoint) ||
-     (isRightInclusive && upperPoint == (p:Point)))
+  def contains(p: Point): Boolean = 
+    (!lowerPoint.greater(p) ||
+     (isLeftInclusive && lowerPoint == (p))) &&
+    (!(p).greater(upperPoint) ||
+     (isRightInclusive && upperPoint == (p)))
 
-  def containsAll(arg: Seq[Int]) = arg.forall(this.contains(_))
+  def containsAll[T: PointType](arg: Seq[T]) =
+    implicitly[PointType[T]].convSeq(arg).forall(this.contains(_))
 
   def isConnectedTo(other: Interval) =
     (!(upperPoint.less(other.lowerPoint)) ||
@@ -78,13 +83,13 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
           (isLeftInclusive, lowerPoint)
         else if(!lowerPoint.greater(other.lowerPoint))
           (other.isLeftInclusive,
-	   Point.max(lowerPoint, other.lowerPoint))
+	   max(lowerPoint, other.lowerPoint))
         else if(lowerPoint == other.lowerPoint)
           (other.isLeftInclusive && isLeftInclusive,
-	   Point.max(lowerPoint, other.lowerPoint))
+	   max(lowerPoint, other.lowerPoint))
         else
           (isLeftInclusive,
-	   Point.max(lowerPoint, other.lowerPoint))
+	   max(lowerPoint, other.lowerPoint))
 
       val right =
         if(upperPoint == pInfinite && other.upperPoint == pInfinite)
@@ -95,13 +100,13 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
           (isRightInclusive, upperPoint)
         else if(!upperPoint.less(other.upperPoint))
           (other.isRightInclusive,
-	   Point.min(upperPoint, other.upperPoint))
+	   min(upperPoint, other.upperPoint))
         else if(upperPoint == other.upperPoint)
           (other.isRightInclusive && isRightInclusive,
-	   Point.min(upperPoint, other.upperPoint))
+	   min(upperPoint, other.upperPoint))
         else
           (isRightInclusive,
-	   Point.min(upperPoint, other.upperPoint))
+	   min(upperPoint, other.upperPoint))
 
       (left, right) match {
         case ((true, lp), (true, up)) => ClosedInterval(lp, up)
