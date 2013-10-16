@@ -2,6 +2,8 @@ package interval
 
 object Interval {
 
+  def parse(str: String): Interval = OpenClosedInterval(0, 0)
+
   def parse(str: String,
             mark: (String, String),
             f: (Point, Point)=>Interval): Interval = {
