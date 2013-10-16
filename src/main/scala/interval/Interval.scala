@@ -59,13 +59,19 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
   def containsAll(arg: Seq[Int]) = arg.forall(this.contains(_))
 
   def isConnectedTo(other: Interval) =
-    if(lowerPoint == mInfinite && upperPoint == pInfinite) true
-    else if(lowerPoint == mInfinite) {
+    if((lowerPoint == mInfinite && upperPoint == pInfinite) ||
+       (other.lowerPoint == mInfinite && other.upperPoint == pInfinite) ||
+       (lowerPoint == mInfinite && other.lowerPoint == mInfinite) ||
+       (upperPoint == pInfinite && other.upperPoint == pInfinite) ||
+       (other.lowerPoint == mInfinite && other.upperPoint == pInfinite) ||
+       (other.upperPoint == pInfinite && upperPoint == pInfinite))
+      true
+    else if(lowerPoint == mInfinite || other.upperPoint == pInfinite) {
       (upperPoint.point > other.lowerPoint.point ||
        (isRightInclusive && other.isLeftInclusive && 
         upperPoint.point == other.lowerPoint.point))
     } 
-    else if(upperPoint == pInfinite) {
+    else if(upperPoint == pInfinite || other.lowerPoint == mInfinite) {
       (other.upperPoint.point > lowerPoint.point ||
        (other.isRightInclusive && isLeftInclusive && 
         other.upperPoint.point == lowerPoint.point))
@@ -87,57 +93,46 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
       )
     }
     else {
+
       val left =
         if(lowerPoint == mInfinite && other.lowerPoint == mInfinite)
-          false
+          (false, mInfinite)
         else if(lowerPoint == mInfinite)
-          other.isLeftInclusive
+          (other.isLeftInclusive, other.lowerPoint)
         else if(other.lowerPoint == mInfinite)
-          isLeftInclusive
+          (isLeftInclusive, lowerPoint)
         else if(lowerPoint.point < other.lowerPoint.point)
-          other.isLeftInclusive
+          (other.isLeftInclusive,
+	   Math.max(lowerPoint.point, other.lowerPoint.point):Point)
         else if(lowerPoint.point == other.lowerPoint.point)
-          other.isLeftInclusive && isLeftInclusive
+          (other.isLeftInclusive && isLeftInclusive,
+	   Math.max(lowerPoint.point, other.lowerPoint.point):Point)
         else
-          isLeftInclusive
+          (isLeftInclusive,
+	   Math.max(lowerPoint.point, other.lowerPoint.point):Point)
 
       val right =
         if(upperPoint == pInfinite && other.upperPoint == pInfinite)
-          false
+          (false, pInfinite)
         else if(upperPoint == pInfinite)
-          other.isRightInclusive
+          (other.isRightInclusive, other.upperPoint)
         else if(other.upperPoint == pInfinite)
-          isRightInclusive
+          (isRightInclusive, upperPoint)
         else if(upperPoint.point > other.upperPoint.point)
-          other.isRightInclusive
+          (other.isRightInclusive,
+	   Math.min(upperPoint.point, other.upperPoint.point):Point)
         else if(upperPoint.point == other.upperPoint.point)
-          other.isRightInclusive && isRightInclusive
+          (other.isRightInclusive && isRightInclusive,
+	   Math.min(upperPoint.point, other.upperPoint.point):Point)
         else
-          isRightInclusive
-
-      val lp: Point = 
-        if(lowerPoint == mInfinite && other.lowerPoint == mInfinite)
-          mInfinite
-        else if(lowerPoint == mInfinite)
-          other.lowerPoint
-        else if(other.lowerPoint == mInfinite)
-          lowerPoint
-        else Math.max(lowerPoint.point, other.lowerPoint.point):Point
-
-      val up: Point =
-        if(upperPoint == pInfinite && other.upperPoint == pInfinite)
-          pInfinite
-        else if(upperPoint == pInfinite)
-          other.upperPoint
-        else if(other.upperPoint == pInfinite)
-          upperPoint
-        else Math.min(upperPoint.point, other.upperPoint.point):Point
+          (isRightInclusive,
+	   Math.min(upperPoint.point, other.upperPoint.point):Point)
 
       (left, right) match {
-        case (true, true) => ClosedInterval(lp, up)
-        case (true, false) => ClosedOpenInterval(lp, up)
-        case (false, true) => OpenClosedInterval(lp, up)
-        case (false, false) => OpenInterval(lp, up)
+        case ((true, lp), (true, up)) => ClosedInterval(lp, up)
+        case ((true, lp), (false, up)) => ClosedOpenInterval(lp, up)
+        case ((false, lp), (true, up)) => OpenClosedInterval(lp, up)
+        case ((false, lp), (false, up)) => OpenInterval(lp, up)
       }
     }
 
