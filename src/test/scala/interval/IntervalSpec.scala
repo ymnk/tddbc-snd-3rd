@@ -62,4 +62,11 @@ class IntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers {
       }
     }
   }
+
+  it should "implement a perser." in {
+    Interval.parse("(3,8)") should equal (OpenInterval(3, 8))
+    Interval.parse("[3,8]") should equal (ClosedInterval(3, 8))
+    Interval.parse("(3,8]") should equal (OpenClosedInterval(3, 8))
+    Interval.parse("[3,8)") should equal (ClosedOpenInterval(3, 8))
+  }
 }
