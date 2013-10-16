@@ -5,8 +5,7 @@ object Point {
   implicit def fromStr(p: String): Point = p match {
     case "-inf" => mInfinite
     case "+inf" => pInfinite
-    case _ =>
-      throw new IntervalException("There is no way to change "+p+" to Point")
+    case _ => new PointString(p)
   }
 
   object pointType {
@@ -17,6 +16,10 @@ object Point {
     implicit object PointTypePoint extends PointType[Point] {
      def convSeq(seq: Seq[Point]) = seq
      def unconvSet(seq: Set[Point]) = seq
+    }
+    implicit object PointTypeString extends PointType[String] {
+     def convSeq(seq: Seq[String]): Seq[Point] = seq.map(new PointString(_))
+     def unconvSet(set: Set[Point]): Set[String] = set.map(_.asInstanceOf[PointString].point)
     }
   }
 }
@@ -69,6 +72,23 @@ class PointInt(_point: Int) extends Point {
   }
   override def greater(other: Point) = other match {
     case that: PointInt => point >= that.point
+    case _ => super.greater(other)
+  }
+}
+
+class PointString(_point: String) extends Point {
+  def point(): String = _point
+  override def toString() = point.toString
+  override def equals(other: Any) = other match {
+    case that: PointString => point == that.point
+    case _ => super.equals(other)
+  }
+  override def less(other: Point) = other match {
+    case that: PointString => point <= that.point
+    case _ => super.less(other)
+  }
+  override def greater(other: Point) = other match {
+    case that: PointString => point >= that.point
     case _ => super.greater(other)
   }
 }
