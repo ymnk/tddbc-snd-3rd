@@ -54,45 +54,6 @@ trait Point {
   }
 }
 
-trait PointType[T] {
-  def convSeq(seq: Seq[T]): Seq[Point]
-  def unconvSet(set: Set[Point]): Set[T]
-}
-
-class PointInt(_point: Int) extends Point {
-  def point(): Int = _point
-  override def toString() = point.toString
-  override def equals(other: Any) = other match {
-    case that: PointInt => point == that.point
-    case _ => super.equals(other)
-  }
-  override def less(other: Point) = other match {
-    case that: PointInt => point <= that.point
-    case _ => super.less(other)
-  }
-  override def greater(other: Point) = other match {
-    case that: PointInt => point >= that.point
-    case _ => super.greater(other)
-  }
-}
-
-class PointString(_point: String) extends Point {
-  def point(): String = _point
-  override def toString() = point.toString
-  override def equals(other: Any) = other match {
-    case that: PointString => point == that.point
-    case _ => super.equals(other)
-  }
-  override def less(other: Point) = other match {
-    case that: PointString => point <= that.point
-    case _ => super.less(other)
-  }
-  override def greater(other: Point) = other match {
-    case that: PointString => point >= that.point
-    case _ => super.greater(other)
-  }
-}
-
 object mInfinite extends Point {
   override def toString() = "-inf"
   override def equals(other: Any) = other match {
