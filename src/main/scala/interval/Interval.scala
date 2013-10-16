@@ -2,7 +2,17 @@ package interval
 
 object Interval {
 
-  def parse(str: String): Interval = OpenClosedInterval(0, 0)
+  private val parsers =
+    List(ClosedInterval.parse _, 
+         ClosedOpenInterval.parse _, 
+         OpenInterval.parse _, 
+         OpenClosedInterval.parse _)
+  def parse(str: String): Interval = {
+    parsers.foldLeft(None: Option[Interval]){
+     case (Some(s), _) => Some(s)
+     case (_ , e) => try{ Some(e(str)) }catch{case e: Throwable => None}
+    }.getOrElse{ throw new IntervalException("invalid notation") }
+  }
 
   def parse(str: String,
             mark: (String, String),
