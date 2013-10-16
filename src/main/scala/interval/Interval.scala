@@ -20,6 +20,10 @@ object Interval {
       case _ => throw new IntervalException("invalid notation")
     }
   }
+
+  def filter(seq: Seq[Int], interval: Interval): Set[Int] = {
+    seq.filter(interval.contains(_)).toSet
+  }
 }
 
 abstract class Interval(val leftEnd: String, val rightEnd: String) {
