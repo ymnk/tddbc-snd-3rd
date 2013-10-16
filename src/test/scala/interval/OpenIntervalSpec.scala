@@ -27,11 +27,11 @@ class OpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers 
   }
 
   it should "return its lower point." in {
-    OpenInterval(3, 8).lowerPoint.point should equal (3)
+    OpenInterval(3, 8).lowerPoint should equal (3: Point)
   }
 
   it should "return its upper point." in {
-    OpenInterval(3, 8).upperPoint.point should equal (8)
+    OpenInterval(3, 8).upperPoint should equal (8: Point)
   }
 
   it should "contains method." in {

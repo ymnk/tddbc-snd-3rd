@@ -78,13 +78,13 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
           (isLeftInclusive, lowerPoint)
         else if(!lowerPoint.greater(other.lowerPoint))
           (other.isLeftInclusive,
-	   Math.max(lowerPoint.point, other.lowerPoint.point):Point)
+	   Point.max(lowerPoint, other.lowerPoint))
         else if(lowerPoint == other.lowerPoint)
           (other.isLeftInclusive && isLeftInclusive,
-	   Math.max(lowerPoint.point, other.lowerPoint.point):Point)
+	   Point.max(lowerPoint, other.lowerPoint))
         else
           (isLeftInclusive,
-	   Math.max(lowerPoint.point, other.lowerPoint.point):Point)
+	   Point.max(lowerPoint, other.lowerPoint))
 
       val right =
         if(upperPoint == pInfinite && other.upperPoint == pInfinite)
@@ -95,13 +95,13 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
           (isRightInclusive, upperPoint)
         else if(!upperPoint.less(other.upperPoint))
           (other.isRightInclusive,
-	   Math.min(upperPoint.point, other.upperPoint.point):Point)
+	   Point.min(upperPoint, other.upperPoint))
         else if(upperPoint == other.upperPoint)
           (other.isRightInclusive && isRightInclusive,
-	   Math.min(upperPoint.point, other.upperPoint.point):Point)
+	   Point.min(upperPoint, other.upperPoint))
         else
           (isRightInclusive,
-	   Math.min(upperPoint.point, other.upperPoint.point):Point)
+	   Point.min(upperPoint, other.upperPoint))
 
       (left, right) match {
         case ((true, lp), (true, up)) => ClosedInterval(lp, up)
