@@ -1,14 +1,26 @@
 package interval
 
 object Interval {
-  private val inclusive = Array("[", "]")
-  private val exclusive = Array("(", ")")
 
   def parse(str: String,
             mark: (String, String),
             f: (Point, Point)=>Interval): Interval = {
     val re = ("\\"+mark._1+"\\s*(.+)\\s*,\\s*(.+)\\s*\\"+mark._2).r
+    val re_date = ("\\"+mark._1+"\\s*(\\d+)/(\\d+)/(\\d+)\\s*,\\s*(\\d+)/(\\d+)/(\\d+)\\s*\\"+mark._2).r
     str.trim match {
+      case re_date(x1,x2,x3,y1,y2,y3) => 
+        import java.util.Calendar
+        val c1 = Calendar.getInstance()
+        c1.clear
+        c1.set(Integer.parseInt(x1),
+               Integer.parseInt(x2)-1,
+               Integer.parseInt(x3),0,0,0)
+        val c2 = Calendar.getInstance()
+        c2.clear
+        c2.set(Integer.parseInt(y1),
+               Integer.parseInt(y2)-1,
+               Integer.parseInt(y3),0,0,0)
+        f(c1: Point, c2: Point)
       case re(x,y) => 
         val l = if(x.forall(_.isDigit)) Integer.parseInt(x): Point
                 else if (x.equals("-inf")) mInfinite

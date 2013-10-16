@@ -1,6 +1,7 @@
 package interval
 
 object Point {
+  implicit def fromCalendar(p: java.util.Calendar): Point = new PointCalendar(p)
   implicit def fromInt(p: Int): Point = new PointInt(p)
   implicit def fromStr(p: String): Point = p match {
     case "-inf" => mInfinite
@@ -20,6 +21,11 @@ object Point {
     implicit object PointTypeString extends PointType[String] {
      def convSeq(seq: Seq[String]): Seq[Point] = seq.map(new PointString(_))
      def unconvSet(set: Set[Point]): Set[String] = set.map(_.asInstanceOf[PointString].point)
+    }
+    import java.util.Calendar
+    implicit object PointTypeCalendar extends PointType[Calendar] {
+     def convSeq(seq: Seq[Calendar]): Seq[Point] = seq.map(new PointCalendar(_))
+     def unconvSet(set: Set[Point]): Set[Calendar] = set.map(_.asInstanceOf[PointCalendar].point)
     }
   }
 }
