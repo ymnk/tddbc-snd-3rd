@@ -2,6 +2,7 @@ package interval
 
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.prop.TableDrivenPropertyChecks._
 
 import Point.pointType._
 
@@ -16,32 +17,48 @@ class InfiniteIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatch
   behavior of "InfiniteInterval"
 
   it should "be instantiated by lower and upper points" in {
+
     OpenInterval(mInfinite, pInfinite)
     OpenInterval(3, pInfinite) 
     OpenInterval(mInfinite, 8) 
-    intercept[IntervalException] { ClosedInterval(3, pInfinite) }
-    intercept[IntervalException] { ClosedInterval(mInfinite, 8) }
-    intercept[IntervalException] { OpenClosedInterval(3, pInfinite) }
-    intercept[IntervalException] { ClosedOpenInterval(mInfinite, 8) }
+
+    forAll(
+      Table("i",
+            () => ClosedInterval(3, pInfinite),
+            () => ClosedInterval(mInfinite, 8),
+            () => OpenClosedInterval(3, pInfinite),
+            () => ClosedOpenInterval(mInfinite, 8))) { i =>
+      intercept[IntervalException] {
+        i()
+      }
+    }
+
     OpenClosedInterval(mInfinite, 8)
     ClosedOpenInterval(3, pInfinite)
   }
 
   it should "impelement the pretty printer." in {
-    OpenInterval(mInfinite, 8).toString should equal ("(-inf,8)")
-    OpenInterval(3, pInfinite).toString should equal ("(3,+inf)")
-    OpenInterval(mInfinite, pInfinite).toString should equal ("(-inf,+inf)")
+
+    forAll(
+      Table(
+        ("i",                                 "v"),
+        (OpenInterval(mInfinite, 8),          "(-inf,8)"),
+        (OpenInterval(3, pInfinite),          "(3,+inf)"),
+        (OpenInterval(mInfinite, pInfinite),  "(-inf,+inf)"))){ (i, v) =>
+      i.toString should equal (v)
+    }
   }
 
   it should "throw an exception if its arguments are wrong." in {
-    intercept[IntervalException] {
-      OpenInterval(pInfinite, mInfinite) 
-    }
-    intercept[IntervalException] {
-      OpenInterval(pInfinite, 8)
-    }
-    intercept[IntervalException] {
-      OpenInterval(3, mInfinite)
+
+    forAll(
+      Table("i",
+            () => OpenInterval(pInfinite, mInfinite),
+            () => OpenInterval(pInfinite, 8),
+            () => OpenInterval(3, mInfinite))){ i =>
+      intercept[IntervalException] {
+        i()
+      }
     }
   }
 
@@ -55,44 +72,74 @@ class InfiniteIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatch
 
   it should "contains method." in {
     val _mito8 = OpenInterval(mInfinite, 8)
-    _mito8.contains(0) should equal (true)
-    _mito8.contains(8) should equal (false)
-    _mito8.contains(10) should equal (false)
+
+    forAll(
+      Table(("n", "v"),
+            (0,   true),
+            (8,   false),
+            (10,  false))) { (n, v) =>
+      _mito8.contains(n) should equal (v)
+    }
+
     val _3topi = OpenInterval(3, pInfinite)
-    _3topi.contains(0) should equal (false)
-    _3topi.contains(3) should equal (false)
-    _3topi.contains(10) should equal (true)
+
+    forAll(
+      Table(("n", "v"),
+            (0,   false),
+            (3,   false),
+            (10,  true))) { (n, v) =>
+      _3topi.contains(n) should equal (v)
+    }
   }
 
   it should "support equals method." in {
     val _3to8 = OpenInterval(3, 8)
 
-    _3to8.equals(OpenInterval(3, 8)) should equal (true)
-    _3to8.equals(OpenInterval(1, 6)) should equal (false)
-
-    _3to8.equals(ClosedInterval(3, 8)) should equal (false)
-    _3to8.equals(ClosedInterval(1, 6)) should equal (false)
+    forAll(
+      Table(
+        ("i",                  "v"),
+        (OpenInterval(3, 8),   true),
+        (OpenInterval(1, 6),   false),
+        (ClosedInterval(3, 8), false),
+        (ClosedInterval(1, 6), false))) { (i, v) =>
+      _3to8.equals(i) should equal (v)
+    }
   }
 
   it should "support isConnectedTo method." in {
     val _3topi = OpenInterval(3, pInfinite)
-    _3topi.isConnectedTo(OpenInterval(1, 6)) should equal (true)
-    _3topi.isConnectedTo(OpenInterval(1, 9)) should equal (true)
-    _3topi.isConnectedTo(OpenInterval(6, 9)) should equal (true)
-    _3topi.isConnectedTo(OpenInterval(1, 3)) should equal (false)
-    _3topi.isConnectedTo(OpenInterval(8, 15)) should equal (true)
+
+    forAll(
+      Table(("i",                  "v"),
+            (OpenInterval(1, 6),   true),
+            (OpenInterval(1, 9),   true),
+            (OpenInterval(6, 9),   true),
+            (OpenInterval(1, 3),   false),
+            (OpenInterval(8, 14),  true))) { (i, v) =>
+      _3topi.isConnectedTo(i) should equal (v)
+    }
 
     val _mito8 = OpenInterval(mInfinite, 8)
-    _mito8.isConnectedTo(OpenInterval(1, 8)) should equal (true)
-    _mito8.isConnectedTo(OpenInterval(8, 15)) should equal (false)
-    _mito8.isConnectedTo(OpenInterval(9, 15)) should equal (false)
+
+    forAll(
+      Table(("i",                  "v"),
+            (OpenInterval(1, 8),   true),
+            (OpenInterval(8, 15),  false),
+            (OpenInterval(9, 15),  false))) { (i, v) =>
+      _mito8.isConnectedTo(i) should equal (v)
+    }
   }
 
   it should "support containsAll method." in {
     val _3topi = OpenInterval(3, pInfinite)
-    _3topi.containsAll(Array(2, 3, 4, 7)) should equal (false)
-    _3topi.containsAll(Array(3, 4, 7)) should equal (false)
-    _3topi.containsAll(Array(4, 7)) should equal (true)
+
+    forAll(
+      Table(("a",                  "v"),
+            (Array(2, 3, 4, 7),    false),
+            (Array(3, 4, 7),       false),
+            (Array(4, 7),          true))) { (a, v) =>
+      _3topi.containsAll(a) should equal (v)
+    }
   }
 
   it should "support getIntersection method for other intervals." in {
@@ -149,7 +196,12 @@ class InfiniteIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatch
   }
 
   it should "support parse method." in {
-    OpenInterval.parse("(-inf,8)").toString should equal ("(-inf,8)")
-    OpenInterval.parse("(3,+inf)").toString should equal ("(3,+inf)")
+
+    forAll(
+      Table(("s",         "v"),
+            ("(-inf,8)",  "(-inf,8)"),
+            ("(3,+inf)",  "(3,+inf)"))) { (s, v) =>
+      OpenInterval.parse(s).toString should equal (v)
+    }
   }
 }

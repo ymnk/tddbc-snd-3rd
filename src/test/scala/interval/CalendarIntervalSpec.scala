@@ -2,6 +2,7 @@ package interval
 
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.prop.TableDrivenPropertyChecks._
 
 import Point.pointType._
 import java.util.Calendar
@@ -46,9 +47,15 @@ class CalendarIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatch
 
   it should "contains method." in {
     val interval = OpenInterval(d(2013,3,1), d(2013,8,1))
-    interval.contains(d(2013,4,1)) should equal (true)
-    interval.contains(d(2013,3,1)) should equal (false)
-    interval.contains(d(2013,2,1)) should equal (false)
+
+    forAll(
+      Table(
+        ("n",           "v"),
+        (d(2013,4,1),   true),
+        (d(2013,3,1),   false),
+        (d(2013,2,1 ),  false))){ (n, v) =>
+      interval.contains(n) should equal (v)
+    }
   }
 
   it should "support parse method." in {
