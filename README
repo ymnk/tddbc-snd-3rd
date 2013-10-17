@@ -5,7 +5,9 @@ TDDBC 仙台 the 3rd[1]のお題[2]をやってみた。
   % sbt
   > test
   
-テストは src/test/scala/interval/ にある。
+テストは src/test/scala/interval/[3] にある。
 
 [1] http://tddbc.doorkeeper.jp/events/6148
 [2] http://devtesting.jp/tddbc/?TDDBC%E4%BB%99%E5%8F%B003/%E8%AA%B2%E9%A1%8C
+[3] https://github.com/ymnk/tddbc-snd-3rd/tree/master/src/test/scala/interval
+
