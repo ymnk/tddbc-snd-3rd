@@ -41,7 +41,7 @@ trait Point {
       )
   }
 
-  def less(other: Point): Boolean = other match {
+  def lessEq(other: Point): Boolean = other match {
     case _: pInfinite.type => true
     case _: mInfinite.type => false
     case _ => 
@@ -50,7 +50,7 @@ trait Point {
       )
   }
 
-  def greater(other: Point): Boolean = other match {
+  def greaterEq(other: Point): Boolean = other match {
     case _: pInfinite.type => false
     case _: mInfinite.type => true
     case _ => 
@@ -66,8 +66,8 @@ object mInfinite extends Point {
     case that: Point if(that eq mInfinite) => true
     case _ => false
   }
-  override def less(other: Point) = true
-  override def greater(other: Point) = other == mInfinite
+  override def lessEq(other: Point) = true
+  override def greaterEq(other: Point) = other == mInfinite
 }
 
 object pInfinite extends Point {
@@ -76,6 +76,6 @@ object pInfinite extends Point {
     case that: Point if(that eq pInfinite) => true
     case _ => false
   }
-  override def less(other: Point) = other == pInfinite
-  override def greater(other: Point) = true
+  override def lessEq(other: Point) = other == pInfinite
+  override def greaterEq(other: Point) = true
 }

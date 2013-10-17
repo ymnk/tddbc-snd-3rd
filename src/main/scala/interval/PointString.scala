@@ -7,12 +7,12 @@ class PointString(_point: String) extends Point {
     case that: PointString => point == that.point
     case _ => super.equals(other)
   }
-  override def less(other: Point) = other match {
+  override def lessEq(other: Point) = other match {
     case that: PointString => point <= that.point
-    case _ => super.less(other)
+    case _ => super.lessEq(other)
   }
-  override def greater(other: Point) = other match {
+  override def greaterEq(other: Point) = other match {
     case that: PointString => point >= that.point
-    case _ => super.greater(other)
+    case _ => super.greaterEq(other)
   }
 }

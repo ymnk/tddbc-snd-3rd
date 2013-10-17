@@ -2,6 +2,7 @@ package interval
 
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.prop.TableDrivenPropertyChecks._
 
 import Point.pointType._
 
@@ -17,12 +18,18 @@ class IntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers {
 
   it should "support filter method." in {
     val seq = (2 to 6).toList
-    Interval.filter(seq, ClosedInterval(3, 5)) should equal (Set(3,4,5))
-    Interval.filter(seq, OpenInterval(3, 5)) should equal (Set(4))
-    Interval.filter(seq, ClosedOpenInterval(3, 5)) should equal (Set(3,4))
-    Interval.filter(seq, ClosedOpenInterval(3, pInfinite)) should equal (Set(3,4,5,6))
-    Interval.filter(seq, OpenClosedInterval(3, 5)) should equal (Set(4,5))
-    Interval.filter(seq, OpenClosedInterval(mInfinite, 5)) should equal (Set(2,3,4,5))
+
+    forAll(
+      Table(
+        ("p",                              "s"),
+        (ClosedInterval(3, 5),             Set(3,4,5)),
+        (OpenInterval(3, 5),               Set(4)),
+        (ClosedOpenInterval(3, 5),         Set(3,4)),
+        (ClosedOpenInterval(3, pInfinite), Set(3,4,5,6)),
+        (OpenClosedInterval(3, 5),         Set(4,5)),
+        (OpenClosedInterval(mInfinite, 5), Set(2,3,4,5)))){ (p, s) =>
+      Interval.filter(seq, p) should equal (s)
+    }
   }
 
   it should "support getIntersection method." in {
@@ -64,9 +71,15 @@ class IntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers {
   }
 
   it should "implement a perser." in {
-    Interval.parse("(3,8)") should equal (OpenInterval(3, 8))
-    Interval.parse("[3,8]") should equal (ClosedInterval(3, 8))
-    Interval.parse("(3,8]") should equal (OpenClosedInterval(3, 8))
-    Interval.parse("[3,8)") should equal (ClosedOpenInterval(3, 8))
+
+    forAll(
+      Table(
+        ("s",      "v"),
+        ("(3,8)",  OpenInterval(3, 8)),
+        ("[3,8]",  ClosedInterval(3, 8)),
+        ("(3,8]",  OpenClosedInterval(3, 8)),
+        ("[3,8)",  ClosedOpenInterval(3, 8)))){ (s, v) =>
+      Interval.parse(s) should equal (v)
+    }
   }
 }

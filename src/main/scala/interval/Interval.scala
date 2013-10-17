@@ -56,8 +56,8 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
   def lowerPoint: Point
   def upperPoint: Point
 
-  private def max(p1: Point, p2: Point): Point = if(p1.less(p2)) p2 else p1
-  private def min(p1: Point, p2: Point): Point = if(p1.less(p2)) p1 else p2
+  private def max(p1: Point, p2: Point): Point = if(p1.lessEq(p2)) p2 else p1
+  private def min(p1: Point, p2: Point): Point = if(p1.lessEq(p2)) p1 else p2
 
   /**
    * The following intervals are not allowed,
@@ -68,7 +68,7 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
      (upperPoint==mInfinite && lowerPoint!=mInfinite) ||
      (upperPoint==pInfinite && isRightInclusive) ||
      (lowerPoint!=mInfinite && upperPoint!=pInfinite &&
-      !lowerPoint.less(upperPoint)))
+      !lowerPoint.lessEq(upperPoint)))
     throw new IntervalException(
         "%s should be lower than %s".format(lowerPoint, upperPoint)
     )
@@ -77,19 +77,19 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
   def isRightInclusive = rightEnd == "]"
 
   def contains(p: Point): Boolean = 
-    (!lowerPoint.greater(p) ||
+    (!lowerPoint.greaterEq(p) ||
      (isLeftInclusive && lowerPoint == (p))) &&
-    (!(p).greater(upperPoint) ||
+    (!(p).greaterEq(upperPoint) ||
      (isRightInclusive && upperPoint == (p)))
 
   def containsAll[T: PointType](arg: Seq[T]) =
     implicitly[PointType[T]].convSeq(arg).forall(this.contains(_))
 
   def isConnectedTo(other: Interval) =
-    (!(upperPoint.less(other.lowerPoint)) ||
+    (!(upperPoint.lessEq(other.lowerPoint)) ||
      (isRightInclusive && other.isLeftInclusive && 
       upperPoint == other.lowerPoint)) &&
-    (!(other.upperPoint.less(lowerPoint)) ||
+    (!(other.upperPoint.lessEq(lowerPoint)) ||
      (other.isRightInclusive && isLeftInclusive && 
       other.upperPoint == lowerPoint))
 
@@ -106,7 +106,7 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
       val up = min(upperPoint, other.upperPoint)
 
       val left =
-        if(!lowerPoint.greater(other.lowerPoint))
+        if(!lowerPoint.greaterEq(other.lowerPoint))
          other.isLeftInclusive
         else if(lowerPoint == other.lowerPoint)
           other.isLeftInclusive && isLeftInclusive
@@ -114,7 +114,7 @@ abstract class Interval(val leftEnd: String, val rightEnd: String) {
           isLeftInclusive
 
       val right =
-        if(!upperPoint.less(other.upperPoint))
+        if(!upperPoint.lessEq(other.upperPoint))
           other.isRightInclusive
         else if(upperPoint == other.upperPoint)
           other.isRightInclusive && isRightInclusive

@@ -11,14 +11,14 @@ class PointCalendar(_point: java.util.Calendar) extends Point {
       point.getTimeInMillis == that.point.getTimeInMillis
     case _ => super.equals(other)
   }
-  override def less(other: Point) = other match {
+  override def lessEq(other: Point) = other match {
     case that: PointCalendar =>
       point.getTimeInMillis <= that.point.getTimeInMillis
-    case _ => super.less(other)
+    case _ => super.lessEq(other)
   }
-  override def greater(other: Point) = other match {
+  override def greaterEq(other: Point) = other match {
     case that: PointCalendar =>
       point.getTimeInMillis >= that.point.getTimeInMillis
-    case _ => super.greater(other)
+    case _ => super.greaterEq(other)
   }
 }

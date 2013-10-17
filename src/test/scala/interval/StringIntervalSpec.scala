@@ -2,6 +2,7 @@ package interval
 
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.prop.TableDrivenPropertyChecks._
 
 import Point.pointType._
 
@@ -41,102 +42,126 @@ class StringIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
 
   it should "contains method." in {
     val interval = OpenInterval("B", "D")
-    interval.contains("C") should equal (true)
-    interval.contains("B") should equal (false)
-    interval.contains("A") should equal (false)
+
+    forAll(
+      Table(
+        ("n", "v"),
+        ("C",   true),
+        ("B",   false),
+        ("A",   false))){ (n, v) =>
+      interval.contains(n) should equal (v)
+    }
   }
 
   it should "support equals method." in {
     val _btod = OpenInterval("B", "D")
 
-    _btod.equals(OpenInterval("B", "D")) should equal (true)
-    _btod.equals(OpenInterval("A", "C")) should equal (false)
-
-    _btod.equals(ClosedInterval("B", "D")) should equal (false)
-    _btod.equals(ClosedInterval("A", "C")) should equal (false)
+    forAll(
+      Table(
+        ("i",                      "v"),
+        (OpenInterval("B", "D"),   true),
+        (OpenInterval("A", "C"),   false),
+        (ClosedInterval("B", "D"), false),
+        (ClosedInterval("A", "C"), false))){ (i, v) =>
+      _btod.equals(i) should equal (v)
+    }
   }
 
   it should "support isConnectedTo method." in {
     val _btod = OpenInterval("B", "D")
-    _btod.isConnectedTo(OpenInterval("A", "C")) should equal (true)
-    _btod.isConnectedTo(OpenInterval("A", "E")) should equal (true)
-    _btod.isConnectedTo(OpenInterval("C", "E")) should equal (true)
-    _btod.isConnectedTo(OpenInterval("A", "B")) should equal (false)
-    _btod.isConnectedTo(OpenInterval("D", "F")) should equal (false)
-    _btod.isConnectedTo(OpenInterval("E", "F")) should equal (false)
+
+    forAll(
+      Table(
+        ("i",                      "v"),
+        (OpenInterval("A", "C"),   true),
+        (OpenInterval("A", "E"),   true),
+        (OpenInterval("C", "E"),   true),
+        (OpenInterval("A", "B"),   false),
+        (OpenInterval("D", "F"),   false),
+        (OpenInterval("E", "F"),   false))){ (i, v) =>
+      _btod.isConnectedTo(i) should equal (v)
+    }
   }
 
   it should "support isConnectedTo method for other intervals." in {
     val _btod = OpenInterval("B", "D")
 
-    val false_cases = Array(
-      ClosedInterval("A", "B"), ClosedInterval("D", "F"),
-      OpenInterval("A", "B"), OpenInterval("D", "F"),
-      ClosedOpenInterval("A", "B"), ClosedOpenInterval("D", "F"),
-      OpenClosedInterval("A", "B"), OpenClosedInterval("D", "F")
-    )
-
-    for(interval <- false_cases){
-      _btod.isConnectedTo(interval) should equal (false)
+    forAll(
+      Table(
+        ("i",                          "v"),
+        (ClosedInterval("A", "B"),     false),
+        (ClosedInterval("D", "F"),     false),
+        (OpenInterval("A", "B"),       false),
+        (OpenInterval("D", "F"),       false),
+        (ClosedOpenInterval("A", "B"), false),
+        (ClosedOpenInterval("D", "F"), false),
+        (OpenClosedInterval("A", "B"), false),
+        (OpenClosedInterval("D", "F"), false))){ (i, v) =>
+      _btod.isConnectedTo(i) should equal (v)
     }
   }
 
   it should "support containsAll method." in {
     val _btod = OpenInterval("B", "D")
-    _btod.containsAll(Array("C", "E", "B")) should equal (false)
-    _btod.containsAll(Array("C", "A")) should equal (false)
-    _btod.containsAll(Array("C")) should equal (true)
+
+    forAll(
+      Table(
+        ("a",                  "v"),
+        (Array("C", "E", "B"), false),
+        (Array("C", "A"),      false),
+        (Array("C"),           true))){ (a, v) =>
+      _btod.containsAll(a) should equal (v)
+    }
   }
 
   it should "support getIntersection method for other intervals." in {
     val _btoe = OpenInterval("B", "E")
-    import _btoe.{getIntersection => _btoe_gi}
 
-    intercept[IntervalException] {
-      _btoe_gi(ClosedInterval("A", "B"))
+    forAll(
+      Table("i",
+            OpenInterval("A", "B"),
+            ClosedInterval("A", "B"),
+            OpenClosedInterval("A", "B"),
+            ClosedOpenInterval("A", "B"))) { i =>
+      intercept[IntervalException] {
+        _btoe.getIntersection(i) //  "(B,B)"
+      }
     }
 
-    intercept[IntervalException] {
-      _btoe_gi(OpenClosedInterval("A", "B"))
+    forAll(
+      Table(
+        ("i",                            "v"),
+        (OpenInterval("B", "C"),         "(B,C)"),
+        (ClosedInterval("B", "C"),       "(B,C]"),
+        (OpenClosedInterval("B", "C"),   "(B,C]"),
+        (ClosedOpenInterval("B", "C"),   "(B,C)"),
+
+        (OpenInterval("B", "E"),         "(B,E)"),
+        (ClosedInterval("B", "E"),       "(B,E)"),
+        (OpenClosedInterval("B", "E"),   "(B,E)"),
+        (ClosedOpenInterval("B", "E"),   "(B,E)"),
+
+        (OpenInterval("B", "F"),         "(B,E)"),
+        (ClosedInterval("B", "F"),       "(B,E)"),
+        (OpenClosedInterval("B", "F"),   "(B,E)"),
+        (ClosedOpenInterval("B", "F"),   "(B,E)"),
+
+        (OpenInterval("C", "D"),         "(C,D)"),
+        (ClosedInterval("C", "D"),       "[C,D]"),
+        (OpenClosedInterval("C", "D"),   "(C,D]"),
+        (ClosedOpenInterval("C", "D"),   "[C,D)"),
+
+        (OpenInterval("C", "E"),         "(C,E)"),
+        (ClosedInterval("C", "E"),       "[C,E)"),
+        (OpenClosedInterval("C", "E"),   "(C,E)"),
+        (ClosedOpenInterval("C", "E"),   "[C,E)"),
+
+        (OpenInterval("C", "F"),         "(C,E)"),
+        (ClosedInterval("C", "F"),       "[C,E)"),
+        (OpenClosedInterval("C", "F"),   "(C,E)"),
+        (ClosedOpenInterval("C", "F"),   "[C,E)"))){ (i, v) =>
+      _btoe.getIntersection(i).toString should equal (v)
     }
-
-    intercept[IntervalException] {
-      _btoe_gi(ClosedOpenInterval("A", "B"))
-    }
-
-    intercept[IntervalException] {
-      _btoe_gi(OpenInterval("A", "B"))
-    }
-
-    _btoe_gi(OpenInterval("B", "C")).toString should equal ("(B,C)")
-    _btoe_gi(ClosedInterval("B", "C")).toString should equal ("(B,C]")
-    _btoe_gi(OpenClosedInterval("B", "C")).toString should equal ("(B,C]")
-    _btoe_gi(ClosedOpenInterval("B", "C")).toString should equal ("(B,C)")
-
-    _btoe_gi(OpenInterval("B", "E")).toString should equal ("(B,E)")
-    _btoe_gi(ClosedInterval("B", "E")).toString should equal ("(B,E)")
-    _btoe_gi(OpenClosedInterval("B", "E")).toString should equal ("(B,E)")
-    _btoe_gi(ClosedOpenInterval("B", "E")).toString should equal ("(B,E)")
-
-    _btoe_gi(OpenInterval("B", "F")).toString should equal ("(B,E)")
-    _btoe_gi(ClosedInterval("B", "F")).toString should equal ("(B,E)")
-    _btoe_gi(OpenClosedInterval("B", "F")).toString should equal ("(B,E)")
-    _btoe_gi(ClosedOpenInterval("B", "F")).toString should equal ("(B,E)")
-
-    _btoe_gi(OpenInterval("C", "D")).toString should equal ("(C,D)")
-    _btoe_gi(ClosedInterval("C", "D")).toString should equal ("[C,D]")
-    _btoe_gi(OpenClosedInterval("C", "D")).toString should equal ("(C,D]")
-    _btoe_gi(ClosedOpenInterval("C", "D")).toString should equal ("[C,D)")
-
-    _btoe_gi(OpenInterval("C", "E")).toString should equal ("(C,E)")
-    _btoe_gi(ClosedInterval("C", "E")).toString should equal ("[C,E)")
-    _btoe_gi(OpenClosedInterval("C", "E")).toString should equal ("(C,E)")
-    _btoe_gi(ClosedOpenInterval("C", "E")).toString should equal ("[C,E)")
-
-    _btoe_gi(OpenInterval("C", "F")).toString should equal ("(C,E)")
-    _btoe_gi(ClosedInterval("C", "F")).toString should equal ("[C,E)")
-    _btoe_gi(OpenClosedInterval("C", "F")).toString should equal ("(C,E)")
-    _btoe_gi(ClosedOpenInterval("C", "F")).toString should equal ("[C,E)")
 
     val intervals =
       OpenClosedInterval(mInfinite, "E") ::
