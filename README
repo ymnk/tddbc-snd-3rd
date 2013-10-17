@@ -1,1 +1,11 @@
-http://devtesting.jp/tddbc/?TDDBC%E4%BB%99%E5%8F%B003/%E8%AA%B2%E9%A1%8C
+TDDBC 仙台 the 3rd[1]のお題[2]をやってみた。
+
+  % git clone https://github.com/ymnk/tddbc-snd-3rd.git
+  % cd tddbc-snd-3rd
+  % sbt
+  > test
+  
+テストは src/test/scala/interval/ にある。
+
+[1] http://tddbc.doorkeeper.jp/events/6148
+[2] http://devtesting.jp/tddbc/?TDDBC%E4%BB%99%E5%8F%B003/%E8%AA%B2%E9%A1%8C
