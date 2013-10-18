@@ -24,9 +24,11 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
   }
 
   it should "throw an exception if its arguments are wrong." in {
+    ClosedInterval(3, 3) 
     intercept[IntervalException] {
       ClosedInterval(8, 3) 
     }
+    ClosedInterval(8, 8) 
   }
 
   it can "return its lower point." in {
@@ -44,8 +46,11 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
       Table(
         ("n", "v"),
         (3,   true),
+        (4,   true),
+        (7,   true),
         (8,   true),
         (-1,  false),
+        (2,   false),
         (9,   false))){ (n, v) =>
       interval.contains(n) should equal (v)
     }
@@ -60,7 +65,7 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
         (ClosedInterval(3, 8),  true),
         (ClosedInterval(1, 6),  false),
         (OpenInterval(3, 8),    false),
-        (OpenInterval(1, 6),   false))){ (i, v) =>
+        (OpenInterval(1, 6),    false))){ (i, v) =>
       _3to8.equals(i) should equal (v)
     }
   }
@@ -71,10 +76,12 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
     forAll(
       Table(
         ("i",                   "v"),
+        (ClosedInterval(1, 2),  false),
+        (ClosedInterval(1, 3),  true),
         (ClosedInterval(1, 6),  true),
+        (ClosedInterval(1, 8),  true),
         (ClosedInterval(1, 9),  true),
         (ClosedInterval(6, 9),  true),
-        (ClosedInterval(1, 3),  true),
         (ClosedInterval(8, 15), true),
         (ClosedInterval(9, 12), false))){ (i, v) =>
       _3to8.isConnectedTo(i) should equal (v)
