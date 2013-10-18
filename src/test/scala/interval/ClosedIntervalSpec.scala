@@ -180,5 +180,7 @@ class ClosedIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatcher
 
   it should "support parse method." in {
     ClosedInterval.parse("[3,8]").toString should equal ("[3,8]")
+    ClosedInterval.parse("[+3,+8]").toString should equal ("[3,8]")
+    ClosedInterval.parse("[-8,-3]").toString should equal ("[-8,-3]")
   }
 }
