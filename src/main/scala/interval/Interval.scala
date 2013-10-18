@@ -19,6 +19,7 @@ object Interval {
             f: (Point, Point)=>Interval): Interval = {
     val re = ("\\"+mark._1+"\\s*(.+)\\s*,\\s*(.+)\\s*\\"+mark._2).r
     val re_date = ("\\"+mark._1+"\\s*(\\d+)/(\\d+)/(\\d+)\\s*,\\s*(\\d+)/(\\d+)/(\\d+)\\s*\\"+mark._2).r
+    val re_int = ("\\"+mark._1+"\\s*([+-]?\\d+)\\s*,\\s*([+-]?\\d+)\\s*\\"+mark._2).r
     str.trim match {
       case re_date(x1,x2,x3,y1,y2,y3) => 
         import java.util.Calendar
@@ -33,12 +34,16 @@ object Interval {
                Integer.parseInt(y2)-1,
                Integer.parseInt(y3),0,0,0)
         f(c1: Point, c2: Point)
+      case re_int(x,y) => 
+        val l =
+	  Integer.parseInt(if(x.startsWith("+")) x.substring(1) else x): Point
+        val u =
+	  Integer.parseInt(if(y.startsWith("+")) y.substring(1) else y): Point
+        f(l, u)
       case re(x,y) => 
-        val l = if(x.forall(_.isDigit)) Integer.parseInt(x): Point
-                else if (x.equals("-inf")) mInfinite
+        val l = if (x.equals("-inf")) mInfinite
                 else x: Point
-        val u = if(y.forall(_.isDigit)) Integer.parseInt(y): Point
-                else if (y.equals("+inf")) pInfinite
+        val u = if (y.equals("+inf")) pInfinite
                 else y: Point
         f(l, u)
       case _ => throw new IntervalException("invalid notation")
