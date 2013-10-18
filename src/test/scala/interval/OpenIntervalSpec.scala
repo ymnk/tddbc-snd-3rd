@@ -24,9 +24,11 @@ class OpenIntervalSpec extends FlatSpec with BeforeAndAfter with ShouldMatchers 
   }
 
   it should "throw an exception if its arguments are wrong." in {
+    OpenInterval(3, 3) 
     intercept[IntervalException] {
       OpenInterval(8, 3) 
     }
+    OpenInterval(8, 8) 
   }
 
   it should "return its lower point." in {
